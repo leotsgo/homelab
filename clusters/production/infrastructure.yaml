@@ -8,5 +8,5 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./infrastructure/production
+  path: ./infrastructure/controllers/production
   prune: true
