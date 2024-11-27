@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: sync-books
+  namespace: kavita
+spec:
+  schedule: "*/2 * * * *"
+  concurrencyPolicy: Replace
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: sync-books
+              image: alpine:latest
+              command:
+                - sh
+                - -c
+                - apk add --no-cache rsync && rsync -av --delete /books/ /data/
+              volumeMounts:
+                - name: host-books
+                  mountPath: /books
+                - name: kavita-data
+                  mountPath: /data
+          volumes:
+            - name: host-books
+              hostPath:
+                path: /root/books
+                type: Directory
+            - name: kavita-data
+              persistentVolumeClaim:
+                claimName: kavita-data

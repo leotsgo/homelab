@@ -1,0 +1,57 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: wallabag-cluster
+  namespace: wallabag
+spec:
+
+  instances: 1
+  storage:
+    size: 1Gi
+
+  resources:
+    requests:
+      memory: 300Mi
+
+  bootstrap:
+    # initdb:
+    #   database: wallabag
+    #   owner: wallabag
+    recovery:
+      source: wallabag-cluster
+      database: wallabag
+      owner: wallabag
+
+  backup:
+    barmanObjectStore:
+      destinationPath: s3://leotsgo/wallabag-v0
+      s3Credentials:
+        accessKeyId:
+          name: aws
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: aws
+          key: ACCESS_SECRET_KEY
+      wal:
+        compression: gzip
+      data:
+        compression: gzip
+    retentionPolicy: "14d"
+
+  externalClusters:
+  - name: wallabag-cluster
+    barmanObjectStore:
+      destinationPath: s3://leotsgo/wallabag
+      s3Credentials:
+        accessKeyId:
+          name: aws
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: aws
+          key: ACCESS_SECRET_KEY
+
+  managed:
+    services:
+      disabledDefaultServices:
+        - ro
+        - r

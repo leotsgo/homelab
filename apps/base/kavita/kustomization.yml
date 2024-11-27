@@ -1,0 +1,7 @@
+resources:
+  - namespace.yml
+  - deployment.yml
+  - service.yml
+  - pvc.yml
+  - ingress.yml
+  - cronjob.yml
