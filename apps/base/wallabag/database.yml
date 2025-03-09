@@ -13,6 +13,8 @@ spec:
     requests:
       memory: 300Mi
 
+  enableSuperuserAccess: true
+
   bootstrap:
     # initdb:
     #   database: wallabag
