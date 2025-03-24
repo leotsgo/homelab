@@ -48,3 +48,47 @@ spec:
         - name: books
           persistentVolumeClaim:
             claimName: calibre-books
+# ---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: calibre-server
+#   namespace: calibre
+#   labels:
+#     app: calibre-server
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: calibre-server
+#   template:
+#     metadata:
+#       labels:
+#         app: calibre-server
+#     spec:
+#       containers:
+#         - name: calibre-server
+#           image: lscr.io/linuxserver/calibre:latest
+#           env:
+#             - name: PUID
+#               value: "1000"
+#             - name: PGID
+#               value: "1000"
+#             - name: TZ
+#               value: "America/Sao_Paulo"
+#           resources:
+#             requests:
+#               memory: "128Mi"
+#               cpu: "100m"
+#             limits:
+#               memory: "512Mi"
+#               cpu: "1000m"
+#           ports:
+#             - containerPort: 8080
+#           volumeMounts:
+#             - name: books
+#               mountPath: /config
+#       volumes:
+#         - name: books
+#           persistentVolumeClaim:
+#             claimName: calibre-books

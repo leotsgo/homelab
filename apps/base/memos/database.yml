@@ -1,7 +1,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: memos-cluster-v1
+  name: memos-cluster-v2
   namespace: memos
 spec:
 
@@ -41,6 +41,7 @@ spec:
   - name: memos-cluster
     barmanObjectStore:
       destinationPath: s3://leotsgo/memos
+      serverName: memos-cluster-v1
       s3Credentials:
         accessKeyId:
           name: aws

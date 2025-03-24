@@ -8,5 +8,5 @@ data:
   MEMOS_PORT: "5230"
   user: memos
   dbname: memos
-  host: memos-cluster-v1-rw.memos.svc.cluster.local
+  host: memos-cluster-v2-rw.memos.svc.cluster.local
   sslmode: disable

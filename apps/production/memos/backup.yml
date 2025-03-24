@@ -5,7 +5,7 @@ metadata:
   namespace: memos
 spec:
   immediate: true
-  schedule: "0 0 0 * * 0"
+  schedule: "0 0 0 * * *"
   backupOwnerReference: cluster
   cluster:
-    name: memos-cluster-v1
+    name: memos-cluster-v2
