@@ -1,0 +1,70 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sftpgo
+  namespace: sftpgo
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-production"
+    traefik.ingress.kubernetes.io/headers: |
+      browserXssFilter: true
+      contentTypeNosniff: true
+      forceSTSHeader: true
+      stsIncludeSubdomains: true
+      stsPreload: true
+      stsSeconds: 31536000
+      customFrameOptionsValue: "SAMEORIGIN"
+      contentSecurityPolicy: "default-src 'self'; script-src 'self'"
+      referrerPolicy: "strict-origin-when-cross-origin"
+      permissionsPolicy: "camera=(), microphone=(), geolocation=()"
+spec:
+  rules:
+    - host: "sftp.leotsgo.dev"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: sftpgo
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - "sftp.leotsgo.dev"
+      secretName: sftpgo-tls
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sftpgo-webdav-ingress
+  namespace: sftpgo
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-production"
+    traefik.ingress.kubernetes.io/headers: |
+      browserXssFilter: true
+      contentTypeNosniff: true
+      forceSTSHeader: true
+      stsIncludeSubdomains: true
+      stsPreload: true
+      stsSeconds: 31536000
+      customFrameOptionsValue: "SAMEORIGIN"
+      contentSecurityPolicy: "default-src 'self'; script-src 'self'"
+      referrerPolicy: "strict-origin-when-cross-origin"
+      permissionsPolicy: "camera=(), microphone=(), geolocation=()"
+spec:
+  rules:
+  - host: webdav.leotsgo.dev
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: sftpgo
+            port:
+              number: 81
+  tls:
+  - hosts:
+    - webdav.leotsgo.dev
+    secretName: webdav-tls
+

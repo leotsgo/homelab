@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sftpgo
+  namespace: sftpgo
+  labels:
+    app: sftpgo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sftpgo
+  template:
+    metadata:
+      labels:
+        app: sftpgo
+    spec:
+      containers:
+        - name: sftpgo
+          image: drakkan/sftpgo:latest
+          env:
+            - name: SFTPGO_WEBDAVD__BINDINGS__0__PORT
+              value: "8081"
+            - name: SFTPGO_WEBDAVD__BINDINGS__0__ADDRESS
+              value: "0.0.0.0"
+            - name: SFTPGO_DATA_PROVIDER__USERS_BASE_DIR
+              value: "/var/lib/sftpgo"
+          ports:
+            - containerPort: 8080 # Admin Web UI
+            - containerPort: 2022 # SFTP port
+            - containerPort: 8081 # WebDav
+          volumeMounts:
+            - name: sftp-data
+              mountPath: /var/lib/sftpgo
+      volumes:
+        - name: sftp-data
+          persistentVolumeClaim:
+            claimName: sftpgo-pvc
+
