@@ -17,7 +17,7 @@ spec:
 
   bootstrap:
     recovery:
-      source: memos-cluster
+      source: memos-cluster-v2
       database: memos
       owner: memos
 
@@ -38,10 +38,10 @@ spec:
     retentionPolicy: "14d"
 
   externalClusters:
-  - name: memos-cluster
+  - name: memos-cluster-v2
     barmanObjectStore:
       destinationPath: s3://leotsgo/memos
-      serverName: memos-cluster-v1
+      serverName: memos-cluster-v2
       s3Credentials:
         accessKeyId:
           name: aws
