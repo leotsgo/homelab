@@ -18,3 +18,9 @@ spec:
     crds: Create
   upgrade:
     crds: CreateReplace
+  values:
+    rbac:
+      create: true
+    serviceAccount:
+      create: true
+      name: sealed-secrets-controller
