@@ -5,7 +5,7 @@ metadata:
   namespace: vikunja
 spec:
   immediate: true
-  schedule: "0 0 0 * * *"
+  schedule: "0 0 3 * * *"
   backupOwnerReference: cluster
   cluster:
     name: vikunja-cluster
