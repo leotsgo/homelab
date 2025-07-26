@@ -1,0 +1,61 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: vikunja-cluster
+  namespace: vikunja
+spec:
+  instances: 1
+  storage:
+    size: 1Gi
+
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 250m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+
+  enableSuperuserAccess: true
+
+  bootstrap:
+    initdb:
+      database: vikunja
+      owner: vikunja
+      secret:
+        name: vikunja-db-secret
+
+  backup:
+    barmanObjectStore:
+      destinationPath: s3://leotsgo/vikunja
+      s3Credentials:
+        accessKeyId:
+          name: aws
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: aws
+          key: ACCESS_SECRET_KEY
+      wal:
+        compression: gzip
+      data:
+        compression: gzip
+    retentionPolicy: "14d"
+
+  externalClusters:
+  - name: vikunja-cluster
+    barmanObjectStore:
+      destinationPath: s3://leotsgo/vikunja
+      serverName: vikunja-cluster
+      s3Credentials:
+        accessKeyId:
+          name: aws
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: aws
+          key: ACCESS_SECRET_KEY
+
+  managed:
+    services:
+      disabledDefaultServices:
+        - ro
+        - r 
