@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paperless
+  namespace: paperless
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: paperless
+  template:
+    metadata:
+      labels:
+        app: paperless
+    spec:
+      containers:
+      - name: paperless
+        image: ghcr.io/paperless-ngx/paperless-ngx:latest
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            memory: 512Mi
+            cpu: 500m
+          limits:
+            memory: 1Gi
+            cpu: 1000m
+        env:
+        - name: PAPERLESS_REDIS
+          value: "redis://paperless-redis.paperless.svc.cluster.local:6379"
+        - name: PAPERLESS_DBHOST
+          value: "paperless-cluster-rw.paperless.svc.cluster.local"
+        - name: PAPERLESS_DBPORT
+          value: "5432"
+        - name: PAPERLESS_DBNAME
+          value: "paperless"
+        - name: PAPERLESS_DBUSER
+          value: "paperless"
+        - name: PAPERLESS_DBENGINE
+          value: "postgresql"
+        - name: PAPERLESS_DBSSLMODE
+          value: "disable"
+        - name: PAPERLESS_DBPASS
+          valueFrom:
+            secretKeyRef:
+              name: paperless-db-secret
+              key: password
+        - name: PAPERLESS_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: paperless-secrets
+              key: secret-key
+        - name: PAPERLESS_URL
+          value: "https://paperless.leotsgo.dev"
+        - name: PAPERLESS_TIME_ZONE
+          value: "America/Sao_Paulo"
+        - name: PAPERLESS_CONSUMER_POLLING
+          value: "10"
+        - name: PAPERLESS_CONSUMER_DELETE_DUPLICATES
+          value: "true"
+        - name: PAPERLESS_CONSUMER_SUBDIRS_AS_TAGS
+          value: "false"
+        - name: PAPERLESS_CONSUMER_RECURSIVE
+          value: "false"
+        - name: PAPERLESS_OCR_LANGUAGES
+          value: "por"
+        - name: PAPERLESS_OCR_LANGUAGE
+          value: "por+eng"
+        - name: PAPERLESS_PORT
+          value: "8000"
+        volumeMounts:
+        - name: paperless-data
+          mountPath: /usr/src/paperless/data
+        - name: paperless-media
+          mountPath: /usr/src/paperless/media
+        - name: paperless-export
+          mountPath: /usr/src/paperless/export
+        - name: paperless-consume
+          mountPath: /usr/src/paperless/consume
+      volumes:
+      - name: paperless-data
+        persistentVolumeClaim:
+          claimName: paperless-data
+      - name: paperless-media
+        persistentVolumeClaim:
+          claimName: paperless-media
+      - name: paperless-export
+        persistentVolumeClaim:
+          claimName: paperless-export
+      - name: paperless-consume
+        persistentVolumeClaim:
+          claimName: paperless-consume 

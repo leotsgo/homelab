@@ -6,3 +6,5 @@ resources:
   - memos
   - calibre
   - sftpgo
+  - vikunja
+  - paperless

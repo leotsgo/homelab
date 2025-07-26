@@ -1,8 +1,8 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: vikunja-cluster
-  namespace: vikunja
+  name: paperless-cluster
+  namespace: paperless
 spec:
   instances: 1
   storage:
@@ -20,21 +20,21 @@ spec:
 
   bootstrap:
     initdb:
-      database: vikunja
-      owner: vikunja
+      database: paperless
+      owner: paperless
       secret:
-        name: vikunja-db-secret
+        name: paperless-db-secret
 
   backup:
     barmanObjectStore:
-      destinationPath: s3://leotsgo/vikunja
+      destinationPath: s3://leotsgo/paperless
       s3Credentials:
         accessKeyId:
           name: aws
-          key: AWS_ACCESS_KEY_ID
+          key: ACCESS_KEY_ID
         secretAccessKey:
           name: aws
-          key: AWS_SECRET_ACCESS_KEY
+          key: ACCESS_SECRET_KEY
       wal:
         compression: gzip
       data:
@@ -42,17 +42,17 @@ spec:
     retentionPolicy: "14d"
 
   externalClusters:
-  - name: vikunja-cluster
+  - name: paperless-cluster
     barmanObjectStore:
-      destinationPath: s3://leotsgo/vikunja
-      serverName: vikunja-cluster
+      destinationPath: s3://leotsgo/paperless
+      serverName: paperless-cluster
       s3Credentials:
         accessKeyId:
           name: aws
-          key: AWS_ACCESS_KEY_ID
+          key: ACCESS_KEY_ID
         secretAccessKey:
           name: aws
-          key: AWS_SECRET_ACCESS_KEY
+          key: ACCESS_SECRET_KEY
 
   managed:
     services:

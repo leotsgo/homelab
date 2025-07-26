@@ -1,0 +1,144 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: paperless-data
+  namespace: paperless
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: paperless
+  hostPath:
+    path: /var/data/paperless/data/
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: paperless-media
+  namespace: paperless
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: paperless
+  hostPath:
+    path: /var/data/paperless/media/
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: paperless-export
+  namespace: paperless
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: paperless
+  hostPath:
+    path: /var/data/paperless/export/
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: paperless-consume
+  namespace: paperless
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: paperless
+  hostPath:
+    path: /var/data/paperless/consume/
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: paperless-redis-data
+  namespace: paperless
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: paperless
+  hostPath:
+    path: /var/data/paperless/redis/
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: paperless-data
+  namespace: paperless
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: paperless
+  volumeName: paperless-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: paperless-media
+  namespace: paperless
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: paperless
+  volumeName: paperless-media
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: paperless-export
+  namespace: paperless
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: paperless
+  volumeName: paperless-export
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: paperless-consume
+  namespace: paperless
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: paperless
+  volumeName: paperless-consume
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: paperless-redis-data
+  namespace: paperless
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: paperless
+  volumeName: paperless-redis-data 
