@@ -43,7 +43,8 @@ spec:
   externalClusters:
   - name: wallabag-cluster
     barmanObjectStore:
-      destinationPath: s3://leotsgo/wallabag
+      destinationPath: s3://leotsgo/wallabag-v0
+      serverName: wallabag-cluster
       s3Credentials:
         accessKeyId:
           name: aws
