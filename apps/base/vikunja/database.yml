@@ -11,7 +11,7 @@ spec:
   resources:
     requests:
       memory: 256Mi
-      cpu: 250m
+      cpu: 100m
     limits:
       memory: 512Mi
       cpu: 500m
@@ -42,20 +42,20 @@ spec:
     retentionPolicy: "14d"
 
   externalClusters:
-  - name: vikunja-cluster
-    barmanObjectStore:
-      destinationPath: s3://leotsgo/vikunja
-      serverName: vikunja-cluster
-      s3Credentials:
-        accessKeyId:
-          name: aws
-          key: AWS_ACCESS_KEY_ID
-        secretAccessKey:
-          name: aws
-          key: AWS_SECRET_ACCESS_KEY
+    - name: vikunja-cluster
+      barmanObjectStore:
+        destinationPath: s3://leotsgo/vikunja
+        serverName: vikunja-cluster
+        s3Credentials:
+          accessKeyId:
+            name: aws
+            key: AWS_ACCESS_KEY_ID
+          secretAccessKey:
+            name: aws
+            key: AWS_SECRET_ACCESS_KEY
 
   managed:
     services:
       disabledDefaultServices:
         - ro
-        - r 
+        - r
