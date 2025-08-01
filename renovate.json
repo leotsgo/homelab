@@ -1,6 +1,17 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
+  "extends": ["config:recommended"],
+  "flux": {
+    "managerFilePatterns": ["/(?:^|/)gotk-components\\.ya?ml$/"]
+  },
+  "enabledManagers": ["regex"],
+  "regexManagers": [
+    {
+      "fileMatch": ["^apps/base/.+\\.ya?ml$"],
+      "matchStrings": [
+        "image:\\s*\"?(?<depName>[\\w\\-/\\.]+)(?::(?<currentValue>[\\w\\.-]+))?\"?"
+      ],
+      "datasourceTemplate": "docker"
+    }
   ]
 }
