@@ -11,7 +11,7 @@ spec:
   resources:
     requests:
       memory: 256Mi
-      cpu: 250m
+      cpu: 100m
     limits:
       memory: 512Mi
       cpu: 500m
@@ -42,20 +42,20 @@ spec:
     retentionPolicy: "14d"
 
   externalClusters:
-  - name: paperless-cluster
-    barmanObjectStore:
-      destinationPath: s3://leotsgo/paperless
-      serverName: paperless-cluster
-      s3Credentials:
-        accessKeyId:
-          name: aws
-          key: ACCESS_KEY_ID
-        secretAccessKey:
-          name: aws
-          key: ACCESS_SECRET_KEY
+    - name: paperless-cluster
+      barmanObjectStore:
+        destinationPath: s3://leotsgo/paperless
+        serverName: paperless-cluster
+        s3Credentials:
+          accessKeyId:
+            name: aws
+            key: ACCESS_KEY_ID
+          secretAccessKey:
+            name: aws
+            key: ACCESS_SECRET_KEY
 
   managed:
     services:
       disabledDefaultServices:
         - ro
-        - r 
+        - r
