@@ -5,19 +5,7 @@
     "managerFilePatterns": ["/(?:^|/)gotk-components\\.ya?ml$/"]
   },
   "enabledManagers": ["regex"],
-  "regexManagers": [
-    {
-      "fileMatch": ["^apps/base/.+\\.ya?ml$"],
-      "matchStrings": [
-        "image:\\s*\"?(?<depName>[\\w\\-/\\.]+)(?::(?<currentValue>[\\w\\.-]+))?\"?"
-      ],
-      "datasourceTemplate": "docker"
-    }
-  ],
-  "hostRules": [
-    {
-      "hostType": "docker",
-      "matchHost": "lscr.io"
-    }
-  ]
+  "kubernetes": {
+    "managerFilePatterns": ["/\\.yaml$/"]
+  }
 }
