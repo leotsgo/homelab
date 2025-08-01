@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: sftpgo
-          image: drakkan/sftpgo:latest
+          image: drakkan/sftpgo:v2.6.5
           env:
             - name: SFTPGO_WEBDAVD__BINDINGS__0__PORT
               value: "8081"
@@ -36,4 +36,3 @@ spec:
         - name: sftp-data
           persistentVolumeClaim:
             claimName: sftpgo-pvc
-
