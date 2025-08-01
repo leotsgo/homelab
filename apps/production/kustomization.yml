@@ -3,7 +3,6 @@ kind: Kustomization
 resources:
   - whoami
   - wallabag
-  - memos
   - calibre
   - sftpgo
   - vikunja
