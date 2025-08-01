@@ -1,0 +1,11 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: commafeed-scheduled-backup
+  namespace: commafeed
+spec:
+  immediate: true
+  schedule: "0 0 3 * * *"
+  backupOwnerReference: cluster
+  cluster:
+    name: commafeed-cluster 

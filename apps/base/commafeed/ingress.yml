@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: commafeed
+  namespace: commafeed
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-production"
+    traefik.ingress.kubernetes.io/headers: |
+      browserXssFilter: true
+      contentTypeNosniff: true
+      forceSTSHeader: true
+      stsIncludeSubdomains: true
+      stsPreload: true
+      stsSeconds: 31536000
+      customFrameOptionsValue: "SAMEORIGIN"
+      contentSecurityPolicy: "default-src 'self'; script-src 'self'"
+      referrerPolicy: "strict-origin-when-cross-origin"
+      permissionsPolicy: "camera=(), microphone=(), geolocation=()"
+spec:
+  tls:
+  - hosts:
+    - commafeed.leotsgo.dev
+    secretName: commafeed-tls
+  rules:
+  - host: commafeed.leotsgo.dev
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: commafeed
+            port:
+              number: 8082 
