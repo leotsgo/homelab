@@ -9,6 +9,7 @@
     ]
   },
   "enabledManagers": [
+    "flux",
     "custom.regex"
   ],
   "customManagers": [
