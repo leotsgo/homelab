@@ -31,10 +31,10 @@ spec:
       s3Credentials:
         accessKeyId:
           name: aws
-          key: AWS_ACCESS_KEY_ID
+          key: ACCESS_KEY_ID
         secretAccessKey:
           name: aws
-          key: AWS_SECRET_ACCESS_KEY
+          key: ACCESS_SECRET_KEY
       wal:
         compression: gzip
       data:
@@ -49,10 +49,10 @@ spec:
         s3Credentials:
           accessKeyId:
             name: aws
-            key: AWS_ACCESS_KEY_ID
+            key: ACCESS_KEY_ID
           secretAccessKey:
             name: aws
-            key: AWS_SECRET_ACCESS_KEY
+            key: ACCESS_SECRET_KEY
 
   managed:
     services:
