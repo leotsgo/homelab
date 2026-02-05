@@ -5,8 +5,8 @@ metadata:
   namespace: markmine
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-production"
-    traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
 spec:
+  ingressClassName: traefik
   rules:
     - host: PLACEHOLDER_HOST
       http:
