@@ -45,7 +45,7 @@ spec:
               mountPath: /opt/sonarqube/extensions
       containers:
         - name: sonarqube
-          image: sonarqube:25.1-community
+          image: sonarqube:25.1.0.102122-community
           ports:
             - containerPort: 9000
           resources:
