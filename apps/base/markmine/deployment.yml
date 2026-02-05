@@ -14,6 +14,15 @@ spec:
         app: markmine-backend
         policy-type: app
     spec:
+      initContainers:
+        - name: migrate
+          image: ghcr.io/leotsgo/markmine-backend:latest
+          command: ["bun", "run", "migrate"]
+          envFrom:
+            - configMapRef:
+                name: markmine-config
+            - secretRef:
+                name: markmine-secrets
       containers:
         - name: backend
           image: ghcr.io/leotsgo/markmine-backend:latest
