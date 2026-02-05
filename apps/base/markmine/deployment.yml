@@ -23,6 +23,14 @@ spec:
                 name: markmine-config
             - secretRef:
                 name: markmine-secrets
+        - name: seed
+          image: ghcr.io/leotsgo/markmine-backend:main-39eaef6-1770271723 # {"$imagepolicy": "flux-system:markmine-backend"}
+          command: ["bun", "run", "db:seed"]
+          envFrom:
+            - configMapRef:
+                name: markmine-config
+            - secretRef:
+                name: markmine-secrets
       containers:
         - name: backend
           image: ghcr.io/leotsgo/markmine-backend:main-39eaef6-1770271723 # {"$imagepolicy": "flux-system:markmine-backend"}
