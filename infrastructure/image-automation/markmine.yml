@@ -30,10 +30,11 @@ spec:
   imageRepositoryRef:
     name: markmine-backend
   filterTags:
-    pattern: '^[a-f0-9]{7,40}$'
+    pattern: '^main-[a-f0-9]+-(?P<ts>[0-9]+)$'
+    extract: '$ts'
   policy:
-    alphabetical:
-      order: desc
+    numerical:
+      order: asc
 ---
 apiVersion: image.toolkit.fluxcd.io/v1beta2
 kind: ImagePolicy
@@ -44,10 +45,11 @@ spec:
   imageRepositoryRef:
     name: markmine-frontend
   filterTags:
-    pattern: '^[a-f0-9]{7,40}$'
+    pattern: '^main-[a-f0-9]+-(?P<ts>[0-9]+)$'
+    extract: '$ts'
   policy:
-    alphabetical:
-      order: desc
+    numerical:
+      order: asc
 ---
 apiVersion: image.toolkit.fluxcd.io/v1beta2
 kind: ImageUpdateAutomation
@@ -67,7 +69,7 @@ spec:
       author:
         email: flux@markmine.io
         name: Flux
-      messageTemplate: 'chore(flux): update markmine images to {{range .Changed.Changes}}{{.NewValue}}{{end}}'
+      messageTemplate: 'chore(flux): update markmine images'
     push:
       branch: main
   update:
