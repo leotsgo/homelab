@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - ../../base/markmine
   - configmap.yml
+  - sealed-secret.yml
 patches:
   - path: ingress-patch.yml
   - path: namespace-patch.yml
