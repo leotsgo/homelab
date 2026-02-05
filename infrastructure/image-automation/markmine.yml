@@ -1,0 +1,75 @@
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: markmine-backend
+  namespace: flux-system
+spec:
+  image: ghcr.io/leotsgo/markmine-backend
+  interval: 1m
+  secretRef:
+    name: ghcr-secret
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: markmine-frontend
+  namespace: flux-system
+spec:
+  image: ghcr.io/leotsgo/markmine-frontend
+  interval: 1m
+  secretRef:
+    name: ghcr-secret
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: markmine-backend
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: markmine-backend
+  filterTags:
+    pattern: '^[a-f0-9]{7,40}$'
+  policy:
+    alphabetical:
+      order: desc
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: markmine-frontend
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: markmine-frontend
+  filterTags:
+    pattern: '^[a-f0-9]{7,40}$'
+  policy:
+    alphabetical:
+      order: desc
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImageUpdateAutomation
+metadata:
+  name: markmine
+  namespace: flux-system
+spec:
+  interval: 1m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  git:
+    checkout:
+      ref:
+        branch: main
+    commit:
+      author:
+        email: flux@markmine.io
+        name: Flux
+      messageTemplate: 'chore(flux): update markmine images to {{range .Changed.Changes}}{{.NewValue}}{{end}}'
+    push:
+      branch: main
+  update:
+    path: ./apps
+    strategy: Setters

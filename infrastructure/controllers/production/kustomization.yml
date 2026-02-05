@@ -4,3 +4,4 @@ resources:
   - cert-manager
   - cloudnative-pg
   - sealed-secrets
+  - ../../image-automation
