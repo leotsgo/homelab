@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: markmine-config
+  namespace: markmine
+data:
+  NODE_ENV: "production"
+  APP_URL: "https://markmine.io"
+  DATABASE_URL: "postgres://markmine:$(POSTGRES_PASSWORD)@markmine-db-rw:5432/markmine"

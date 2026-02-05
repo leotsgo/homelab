@@ -1,0 +1,41 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: markmine
+  namespace: markmine
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-production"
+    traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+spec:
+  rules:
+    - host: PLACEHOLDER_HOST
+      http:
+        paths:
+          # API routes
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: markmine-backend
+                port:
+                  number: 3000
+          # Redirect routes (short links)
+          - path: /r
+            pathType: Prefix
+            backend:
+              service:
+                name: markmine-backend
+                port:
+                  number: 3000
+          # Frontend (catch-all)
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: markmine-frontend
+                port:
+                  number: 3000
+  tls:
+    - hosts:
+        - PLACEHOLDER_HOST
+      secretName: markmine-tls
