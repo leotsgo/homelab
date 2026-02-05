@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sonarqube
+  namespace: sonarqube
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-production"
+    traefik.ingress.kubernetes.io/headers: |
+      browserXssFilter: true
+      contentTypeNosniff: true
+      forceSTSHeader: true
+      stsIncludeSubdomains: true
+      stsPreload: true
+      stsSeconds: 31536000
+      customFrameOptionsValue: "SAMEORIGIN"
+      referrerPolicy: "strict-origin-when-cross-origin"
+      permissionsPolicy: "camera=(), microphone=(), geolocation=()"
+spec:
+  tls:
+    - hosts:
+        - sonarqube.leotsgo.dev
+      secretName: sonarqube-tls
+  rules:
+    - host: sonarqube.leotsgo.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: sonarqube
+                port:
+                  number: 9000

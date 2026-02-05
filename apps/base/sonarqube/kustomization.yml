@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: sonarqube
+
+resources:
+  - namespace.yml
+  - database.yml
+  - volumes.yml
+  - deployment.yml
+  - service.yml
+  - ingress.yml

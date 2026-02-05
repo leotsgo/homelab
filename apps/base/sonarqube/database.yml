@@ -1,0 +1,32 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: sonarqube-cluster
+  namespace: sonarqube
+spec:
+  instances: 1
+  storage:
+    size: 2Gi
+
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+
+  enableSuperuserAccess: true
+
+  bootstrap:
+    initdb:
+      database: sonarqube
+      owner: sonarqube
+      secret:
+        name: sonarqube-db-secret
+
+  managed:
+    services:
+      disabledDefaultServices:
+        - ro
+        - r
