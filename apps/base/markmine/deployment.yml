@@ -68,7 +68,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: ghcr.io/leotsgo/markmine-frontend:main-76e81ba-1770268658 # {"$imagepolicy": "flux-system:markmine-frontend"}
+          image: ghcr.io/leotsgo/markmine-frontend:main-5e29412-1770269067 # {"$imagepolicy": "flux-system:markmine-frontend"}
           securityContext:
             allowPrivilegeEscalation: false
           env:
