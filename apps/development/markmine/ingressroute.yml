@@ -8,7 +8,7 @@ spec:
     - websecure
   routes:
     # Match /:org/:slug pattern (exactly 2 path segments)
-    - match: "Host(\`markmine.leotsgo.dev\`) && PathRegexp(\`^/[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+$\`)"
+    - match: Host(`markmine.leotsgo.dev`) && PathRegexp(`^/[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+$`)
       kind: Rule
       priority: 100
       services:
