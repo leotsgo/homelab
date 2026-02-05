@@ -19,6 +19,14 @@ spec:
                 name: markmine-backend
                 port:
                   number: 3000
+          # Redirect routes: /go/:org/:slug
+          - path: /go
+            pathType: Prefix
+            backend:
+              service:
+                name: markmine-backend
+                port:
+                  number: 3000
           # Health check
           - path: /health
             pathType: Exact
