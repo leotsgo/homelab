@@ -1,8 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: markmine
+  name: markmine-dev
   labels:
     app.kubernetes.io/name: markmine
     environment: development
-$patch: replace
