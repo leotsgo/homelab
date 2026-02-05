@@ -66,6 +66,6 @@ spec:
             - name: API_URL
               value: "http://markmine-backend:3000"
           ports:
-            - containerPort: 3000
+            - containerPort: 3001
               protocol: TCP
       restartPolicy: Always
