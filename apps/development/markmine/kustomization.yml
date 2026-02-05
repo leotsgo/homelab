@@ -3,8 +3,17 @@ kind: Kustomization
 namespace: markmine-dev
 resources:
   - ../../base/markmine
-  - namespace.yml
   - configmap.yml
   - sealed-secret.yml
 patches:
   - path: ingress-patch.yml
+  - target:
+      kind: Namespace
+      name: markmine
+    patch: |
+      - op: replace
+        path: /metadata/name
+        value: markmine-dev
+      - op: add
+        path: /metadata/labels/environment
+        value: development
