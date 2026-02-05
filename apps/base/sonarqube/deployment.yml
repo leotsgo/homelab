@@ -26,6 +26,23 @@ spec:
             limits:
               memory: 32Mi
               cpu: 50m
+        - name: fix-permissions
+          image: busybox:1.37
+          securityContext:
+            runAsUser: 0
+          command: ["sh", "-c", "chown -R 1000:1000 /opt/sonarqube/data /opt/sonarqube/extensions"]
+          resources:
+            requests:
+              memory: 16Mi
+              cpu: 10m
+            limits:
+              memory: 32Mi
+              cpu: 50m
+          volumeMounts:
+            - name: sonarqube-data
+              mountPath: /opt/sonarqube/data
+            - name: sonarqube-extensions
+              mountPath: /opt/sonarqube/extensions
       containers:
         - name: sonarqube
           image: sonarqube:25.1-community
