@@ -16,7 +16,7 @@ spec:
     spec:
       initContainers:
         - name: migrate
-          image: ghcr.io/leotsgo/markmine-backend:main-85dfa5a-1770278391 # {"$imagepolicy": "flux-system:markmine-backend"}
+          image: ghcr.io/leotsgo/markmine-backend:main-e4faaa7-1770320369 # {"$imagepolicy": "flux-system:markmine-backend"}
           command: ["bun", "run", "migrate"]
           envFrom:
             - configMapRef:
@@ -24,7 +24,7 @@ spec:
             - secretRef:
                 name: markmine-secrets
         - name: seed
-          image: ghcr.io/leotsgo/markmine-backend:main-85dfa5a-1770278391 # {"$imagepolicy": "flux-system:markmine-backend"}
+          image: ghcr.io/leotsgo/markmine-backend:main-e4faaa7-1770320369 # {"$imagepolicy": "flux-system:markmine-backend"}
           command: ["bun", "run", "db:seed"]
           envFrom:
             - configMapRef:
@@ -33,7 +33,7 @@ spec:
                 name: markmine-secrets
       containers:
         - name: backend
-          image: ghcr.io/leotsgo/markmine-backend:main-85dfa5a-1770278391 # {"$imagepolicy": "flux-system:markmine-backend"}
+          image: ghcr.io/leotsgo/markmine-backend:main-e4faaa7-1770320369 # {"$imagepolicy": "flux-system:markmine-backend"}
           securityContext:
             allowPrivilegeEscalation: false
           envFrom:
