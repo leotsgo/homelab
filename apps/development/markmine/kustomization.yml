@@ -8,7 +8,22 @@ resources:
   - ghcr-sealed-secret.yml
 patches:
   - path: ingress-patch.yml
-  - path: deployment-patch.yml
+  - target:
+      kind: Deployment
+      name: markmine-backend
+    patch: |
+      - op: add
+        path: /spec/template/spec/imagePullSecrets
+        value:
+          - name: ghcr-secret
+  - target:
+      kind: Deployment
+      name: markmine-frontend
+    patch: |
+      - op: add
+        path: /spec/template/spec/imagePullSecrets
+        value:
+          - name: ghcr-secret
   - target:
       kind: Namespace
       name: markmine
