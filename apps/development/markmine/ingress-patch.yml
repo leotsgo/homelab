@@ -15,8 +15,8 @@ spec:
                 name: markmine-backend
                 port:
                   number: 3000
-          - path: /r
-            pathType: Prefix
+          - path: /health
+            pathType: Exact
             backend:
               service:
                 name: markmine-backend

@@ -6,6 +6,7 @@ resources:
   - configmap.yml
   - sealed-secret.yml
   - ghcr-sealed-secret.yml
+  - ingressroute.yml
 patches:
   - path: ingress-patch.yml
   - target:

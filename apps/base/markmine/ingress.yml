@@ -19,15 +19,15 @@ spec:
                 name: markmine-backend
                 port:
                   number: 3000
-          # Redirect routes (short links)
-          - path: /r
-            pathType: Prefix
+          # Health check
+          - path: /health
+            pathType: Exact
             backend:
               service:
                 name: markmine-backend
                 port:
                   number: 3000
-          # Frontend (catch-all)
+          # Frontend (catch-all for SPA routes)
           - path: /
             pathType: Prefix
             backend:
