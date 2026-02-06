@@ -17,14 +17,15 @@ spec:
   instances: 1
   storage:
     size: 5Gi
+    storageClass: local-path
 
   resources:
     requests:
-      memory: 256Mi
-      cpu: 100m
+      memory: 128Mi
+      cpu: 50m
     limits:
-      memory: 512Mi
-      cpu: 500m
+      memory: 256Mi
+      cpu: 250m
 
   enableSuperuserAccess: true
 
@@ -34,35 +35,6 @@ spec:
       owner: nextcloud
       secret:
         name: nextcloud-db-secret
-
-  backup:
-    barmanObjectStore:
-      destinationPath: s3://leotsgo/nextcloud
-      s3Credentials:
-        accessKeyId:
-          name: aws
-          key: AWS_ACCESS_KEY_ID
-        secretAccessKey:
-          name: aws
-          key: AWS_SECRET_ACCESS_KEY
-      wal:
-        compression: gzip
-      data:
-        compression: gzip
-    retentionPolicy: "14d"
-
-  externalClusters:
-    - name: nextcloud-cluster
-      barmanObjectStore:
-        destinationPath: s3://leotsgo/nextcloud
-        serverName: nextcloud-cluster
-        s3Credentials:
-          accessKeyId:
-            name: aws
-            key: AWS_ACCESS_KEY_ID
-          secretAccessKey:
-            name: aws
-            key: AWS_SECRET_ACCESS_KEY
 
   managed:
     services:
