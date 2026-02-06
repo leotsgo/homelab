@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: nextcloud-db-secret
+  namespace: nextcloud
+type: kubernetes.io/basic-auth
+stringData:
+  username: nextcloud
+  password: nextcloud-db-2026
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: nextcloud-cluster
+  namespace: nextcloud
+spec:
+  instances: 1
+  storage:
+    size: 5Gi
+
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+
+  enableSuperuserAccess: true
+
+  bootstrap:
+    initdb:
+      database: nextcloud
+      owner: nextcloud
+      secret:
+        name: nextcloud-db-secret
+
+  backup:
+    barmanObjectStore:
+      destinationPath: s3://leotsgo/nextcloud
+      s3Credentials:
+        accessKeyId:
+          name: aws
+          key: AWS_ACCESS_KEY_ID
+        secretAccessKey:
+          name: aws
+          key: AWS_SECRET_ACCESS_KEY
+      wal:
+        compression: gzip
+      data:
+        compression: gzip
+    retentionPolicy: "14d"
+
+  externalClusters:
+    - name: nextcloud-cluster
+      barmanObjectStore:
+        destinationPath: s3://leotsgo/nextcloud
+        serverName: nextcloud-cluster
+        s3Credentials:
+          accessKeyId:
+            name: aws
+            key: AWS_ACCESS_KEY_ID
+          secretAccessKey:
+            name: aws
+            key: AWS_SECRET_ACCESS_KEY
+
+  managed:
+    services:
+      disabledDefaultServices:
+        - ro
+        - r
