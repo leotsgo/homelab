@@ -14,6 +14,8 @@ spec:
         app: markmine-backend
         policy-type: app
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
       initContainers:
         - name: migrate
           image: ghcr.io/leotsgo/markmine-backend:main-2bab088-1770444147 # {"$imagepolicy": "flux-system:markmine-backend"}
@@ -74,6 +76,8 @@ spec:
         app: markmine-frontend
         policy-type: app
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
       containers:
         - name: frontend
           image: ghcr.io/leotsgo/markmine-frontend:main-2bab088-1770444146 # {"$imagepolicy": "flux-system:markmine-frontend"}
