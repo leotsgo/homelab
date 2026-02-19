@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: markmine-config
-  namespace: markmine
-data:
-  NODE_ENV: "development"
-  APP_URL: "https://markmine.leotsgo.dev"
-  DATABASE_URL: "postgres://markmine:$(POSTGRES_PASSWORD)@markmine-db-rw:5432/markmine"

@@ -1,9 +1,0 @@
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-resources:
-  # - ../../base/markmine
-  # - configmap.yml
-  # - sealedsecret.yml  # TODO: create with kubeseal
-  # - backup.yml        # TODO: add S3 backup config
-patches:
-  - path: ingress-patch.yml
