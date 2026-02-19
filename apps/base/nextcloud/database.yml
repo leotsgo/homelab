@@ -36,6 +36,35 @@ spec:
       secret:
         name: nextcloud-db-secret
 
+  backup:
+    barmanObjectStore:
+      destinationPath: s3://leotsgo/nextcloud
+      s3Credentials:
+        accessKeyId:
+          name: aws
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: aws
+          key: ACCESS_SECRET_KEY
+      wal:
+        compression: gzip
+      data:
+        compression: gzip
+    retentionPolicy: "14d"
+
+  externalClusters:
+    - name: nextcloud-cluster
+      barmanObjectStore:
+        destinationPath: s3://leotsgo/nextcloud
+        serverName: nextcloud-cluster
+        s3Credentials:
+          accessKeyId:
+            name: aws
+            key: ACCESS_KEY_ID
+          secretAccessKey:
+            name: aws
+            key: ACCESS_SECRET_KEY
+
   managed:
     services:
       disabledDefaultServices:
