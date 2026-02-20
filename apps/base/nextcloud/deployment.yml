@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
         - name: nextcloud
-          image: nextcloud:32-apache
+          image: nextcloud:30-apache
           ports:
             - containerPort: 80
           resources:
@@ -33,7 +33,7 @@ spec:
               memory: 256Mi
               cpu: 10m
             limits:
-              memory: 512Mi
+              memory: 1Gi
               cpu: 500m
           env:
             - name: POSTGRES_HOST
@@ -66,7 +66,7 @@ spec:
             - name: REDIS_HOST
               value: "nextcloud-redis.nextcloud.svc.cluster.local"
             - name: PHP_MEMORY_LIMIT
-              value: "256M"
+              value: "512M"
             - name: PHP_UPLOAD_LIMIT
               value: "512M"
           volumeMounts:
