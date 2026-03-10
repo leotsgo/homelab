@@ -7,3 +7,4 @@ resources:
   - paperless
   - sonarqube
   - nextcloud
+  - actual
