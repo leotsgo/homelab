@@ -18,6 +18,9 @@ spec:
       containers:
         - name: actual
           image: actualbudget/actual-server:26.3.0
+          env:
+            - name: ACTUAL_PORT
+              value: "5006"
           resources:
             requests:
               memory: "128Mi"
