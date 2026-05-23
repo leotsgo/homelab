@@ -15,7 +15,7 @@ spec:
     spec:
       initContainers:
         - name: sysctl
-          image: busybox:1.37
+          image: busybox:1.38
           securityContext:
             privileged: true
           command: ["sh", "-c", "sysctl -w vm.max_map_count=524288 && sysctl -w fs.file-max=131072"]
@@ -27,7 +27,7 @@ spec:
               memory: 32Mi
               cpu: 50m
         - name: fix-permissions
-          image: busybox:1.37
+          image: busybox:1.38
           securityContext:
             runAsUser: 0
           command: ["sh", "-c", "chown -R 1000:1000 /opt/sonarqube/data /opt/sonarqube/extensions"]
