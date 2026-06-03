@@ -3,13 +3,10 @@ kind: Ingress
 metadata:
   name: nextcloud
   namespace: nextcloud
-  annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-production"
 spec:
   tls:
   - hosts:
     - nextcloud.leotsgo.dev
-    secretName: nextcloud-tls
   rules:
   - host: nextcloud.leotsgo.dev
     http:

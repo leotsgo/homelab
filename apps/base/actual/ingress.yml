@@ -4,7 +4,6 @@ metadata:
   name: actual
   namespace: actual
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-production"
     traefik.ingress.kubernetes.io/headers: |
       browserXssFilter: true
       contentTypeNosniff: true
@@ -31,4 +30,3 @@ spec:
   tls:
     - hosts:
         - "actual.leotsgo.dev"
-      secretName: actual-tls

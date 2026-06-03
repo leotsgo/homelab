@@ -1,0 +1,10 @@
+apiVersion: traefik.io/v1alpha1
+kind: TLSStore
+metadata:
+  # "default" is the magic name: Traefik serves this certificate for any TLS
+  # router that has no explicitly matching certificate.
+  name: default
+  namespace: kube-system
+spec:
+  defaultCertificate:
+    secretName: wildcard-leotsgo-dev-tls

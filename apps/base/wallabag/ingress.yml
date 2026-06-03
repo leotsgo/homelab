@@ -4,7 +4,6 @@ metadata:
   name: wallabag
   namespace: wallabag
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-production"
     traefik.ingress.kubernetes.io/headers: |
       browserXssFilter: true
       contentTypeNosniff: true
@@ -31,4 +30,3 @@ spec:
   tls:
     - hosts:
         - "wallabag.leotsgo.dev"
-      secretName: wallabag-tls

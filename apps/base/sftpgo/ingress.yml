@@ -4,7 +4,6 @@ metadata:
   name: sftpgo
   namespace: sftpgo
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-production"
     traefik.ingress.kubernetes.io/headers: |
       browserXssFilter: true
       contentTypeNosniff: true
@@ -31,7 +30,6 @@ spec:
   tls:
     - hosts:
         - "sftp.leotsgo.dev"
-      secretName: sftpgo-tls
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -39,7 +37,6 @@ metadata:
   name: sftpgo-webdav-ingress
   namespace: sftpgo
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-production"
     traefik.ingress.kubernetes.io/headers: |
       browserXssFilter: true
       contentTypeNosniff: true
@@ -66,5 +63,4 @@ spec:
   tls:
   - hosts:
     - webdav.leotsgo.dev
-    secretName: webdav-tls
 

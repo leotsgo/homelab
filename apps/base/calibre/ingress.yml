@@ -4,7 +4,6 @@ metadata:
   name: calibre
   namespace: calibre
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-production"
     traefik.ingress.kubernetes.io/headers: |
       browserXssFilter: true
       contentTypeNosniff: true
@@ -31,4 +30,3 @@ spec:
   tls:
     - hosts:
         - "calibre.leotsgo.dev"
-      secretName: calibre-tls

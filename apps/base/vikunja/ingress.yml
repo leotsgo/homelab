@@ -4,7 +4,6 @@ metadata:
   name: vikunja
   namespace: vikunja
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-production"
     traefik.ingress.kubernetes.io/headers: |
       browserXssFilter: true
       contentTypeNosniff: true
@@ -20,7 +19,6 @@ spec:
   tls:
   - hosts:
     - vikunja.leotsgo.dev
-    secretName: vikunja-tls
   rules:
   - host: vikunja.leotsgo.dev
     http:

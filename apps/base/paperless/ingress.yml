@@ -4,7 +4,6 @@ metadata:
   name: paperless
   namespace: paperless
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-production"
     traefik.ingress.kubernetes.io/headers: |
       browserXssFilter: true
       contentTypeNosniff: true
@@ -31,4 +30,3 @@ spec:
   tls:
     - hosts:
         - "paperless.leotsgo.dev"
-      secretName: paperless-tls

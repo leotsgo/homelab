@@ -58,7 +58,6 @@ metadata:
   name: whoami
   namespace: test
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-production"
     # Security Headers
     traefik.ingress.kubernetes.io/router.middlewares: test-rate-limit@kubernetescrd
     traefik.ingress.kubernetes.io/headers: |
@@ -87,4 +86,3 @@ spec:
   tls:
     - hosts:
         - "whoami.leotsgo.dev"
-      secretName: whoami-tls

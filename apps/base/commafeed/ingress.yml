@@ -4,7 +4,6 @@ metadata:
   name: commafeed
   namespace: commafeed
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-production"
     traefik.ingress.kubernetes.io/headers: |
       browserXssFilter: true
       contentTypeNosniff: true
@@ -20,7 +19,6 @@ spec:
   tls:
   - hosts:
     - commafeed.leotsgo.dev
-    secretName: commafeed-tls
   rules:
   - host: commafeed.leotsgo.dev
     http:
