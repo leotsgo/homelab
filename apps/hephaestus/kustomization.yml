@@ -7,6 +7,6 @@ kind: Kustomization
 # Order: calibre -> wallabag -> paperless -> nextcloud.
 resources:
   - calibre
-#  - wallabag
+  - wallabag
 #  - paperless
 #  - nextcloud
