@@ -1,5 +1,5 @@
-# Flip initdb -> recovery (else empty DB); recover from s3://leotsgo/nextcloud
-# (externalClusters, unchanged); write own backups to -v1.
+# Bootstrap recovery (already applied) + backups & recovery source on Backblaze B2
+# (creds = the `b2` secret synced from Vaultwarden). Was AWS S3.
 - op: remove
   path: /spec/bootstrap/initdb
 - op: add
@@ -8,6 +8,29 @@
     source: nextcloud-cluster
     database: nextcloud
     owner: nextcloud
+# --- backup destination -> B2 ---
 - op: replace
   path: /spec/backup/barmanObjectStore/destinationPath
-  value: s3://leotsgo/nextcloud-v1
+  value: s3://leotsgo-data/nextcloud-db
+- op: add
+  path: /spec/backup/barmanObjectStore/endpointURL
+  value: https://s3.us-east-005.backblazeb2.com
+- op: replace
+  path: /spec/backup/barmanObjectStore/s3Credentials/accessKeyId/name
+  value: b2
+- op: replace
+  path: /spec/backup/barmanObjectStore/s3Credentials/secretAccessKey/name
+  value: b2
+# --- recovery source (externalClusters) -> B2 ---
+- op: replace
+  path: /spec/externalClusters/0/barmanObjectStore/destinationPath
+  value: s3://leotsgo-data/nextcloud-db
+- op: add
+  path: /spec/externalClusters/0/barmanObjectStore/endpointURL
+  value: https://s3.us-east-005.backblazeb2.com
+- op: replace
+  path: /spec/externalClusters/0/barmanObjectStore/s3Credentials/accessKeyId/name
+  value: b2
+- op: replace
+  path: /spec/externalClusters/0/barmanObjectStore/s3Credentials/secretAccessKey/name
+  value: b2

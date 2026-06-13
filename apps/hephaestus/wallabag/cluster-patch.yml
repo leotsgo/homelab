@@ -1,4 +1,28 @@
-# Recover from wallabag-v0 (externalClusters, unchanged); write own backups to -v1.
+# Backups + recovery source on Backblaze B2 (creds = the `b2` secret synced from
+# Vaultwarden by the vaultwarden-kubernetes-secrets controller). Was AWS S3.
+# --- backup destination -> B2 ---
 - op: replace
   path: /spec/backup/barmanObjectStore/destinationPath
-  value: s3://leotsgo/wallabag-v1
+  value: s3://leotsgo-data/wallabag-db
+- op: add
+  path: /spec/backup/barmanObjectStore/endpointURL
+  value: https://s3.us-east-005.backblazeb2.com
+- op: replace
+  path: /spec/backup/barmanObjectStore/s3Credentials/accessKeyId/name
+  value: b2
+- op: replace
+  path: /spec/backup/barmanObjectStore/s3Credentials/secretAccessKey/name
+  value: b2
+# --- recovery source (externalClusters) -> B2 ---
+- op: replace
+  path: /spec/externalClusters/0/barmanObjectStore/destinationPath
+  value: s3://leotsgo-data/wallabag-db
+- op: add
+  path: /spec/externalClusters/0/barmanObjectStore/endpointURL
+  value: https://s3.us-east-005.backblazeb2.com
+- op: replace
+  path: /spec/externalClusters/0/barmanObjectStore/s3Credentials/accessKeyId/name
+  value: b2
+- op: replace
+  path: /spec/externalClusters/0/barmanObjectStore/s3Credentials/secretAccessKey/name
+  value: b2
