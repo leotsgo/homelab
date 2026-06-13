@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# wallabag: DB-only. Its base already has bootstrap.recovery from the
+# externalCluster at s3://leotsgo/wallabag-v0, so it recovers on first apply.
+# Patch only its OWN backup path -> -v1 so hephaestus's WAL archiving does not
+# clobber the VPS's live wallabag-v0 backups during the overlap.
+resources:
+  - ../../production/wallabag
+patches:
+  - target:
+      group: postgresql.cnpg.io
+      version: v1
+      kind: Cluster
+      name: wallabag-cluster
+    path: cluster-patch.yml

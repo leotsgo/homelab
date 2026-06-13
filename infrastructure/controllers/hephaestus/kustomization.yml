@@ -1,0 +1,10 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# Same controllers as production, MINUS image-automation: two clusters running
+# ImageUpdateAutomation against the same git branch would race on pushes.
+# cert-manager / cnpg / sealed-secrets are reused verbatim from the production
+# overlays (identical config; DNS-01 issuer + wildcard cert work LAN-only).
+resources:
+  - ../production/cert-manager
+  - ../production/cloudnative-pg
+  - ../production/sealed-secrets

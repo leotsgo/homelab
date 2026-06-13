@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# Apps are added ONE AT A TIME during Phase B (see
+# ../../../homelab-network/runbooks/optiplex-migration.md), each only after its
+# data is staged: hostPath dirs + restic restore for PVC data, and the CNPG
+# barman base backup confirmed present for DB recovery.
+# Order: calibre -> wallabag -> paperless -> nextcloud.
+resources: []
+#  - calibre
+#  - wallabag
+#  - paperless
+#  - nextcloud

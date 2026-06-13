@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# nextcloud: base bootstrap is initdb (would create an EMPTY db). Patch it to
+# recovery from the externalCluster at s3://leotsgo/nextcloud, and bump its own
+# backup path to -v1. PVC data (/var/data/nextcloud/{data,redis}, 50Gi) is
+# hostPath: create the dirs + restic-restore before enabling this overlay.
+resources:
+  - ../../production/nextcloud
+patches:
+  - target:
+      group: postgresql.cnpg.io
+      version: v1
+      kind: Cluster
+      name: nextcloud-cluster
+    path: cluster-patch.yml

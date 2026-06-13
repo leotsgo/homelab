@@ -1,0 +1,4 @@
+# Recover from wallabag-v0 (externalClusters, unchanged); write own backups to -v1.
+- op: replace
+  path: /spec/backup/barmanObjectStore/destinationPath
+  value: s3://leotsgo/wallabag-v1

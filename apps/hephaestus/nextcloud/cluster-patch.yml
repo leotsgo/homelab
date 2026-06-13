@@ -1,0 +1,13 @@
+# Flip initdb -> recovery (else empty DB); recover from s3://leotsgo/nextcloud
+# (externalClusters, unchanged); write own backups to -v1.
+- op: remove
+  path: /spec/bootstrap/initdb
+- op: add
+  path: /spec/bootstrap/recovery
+  value:
+    source: nextcloud-cluster
+    database: nextcloud
+    owner: nextcloud
+- op: replace
+  path: /spec/backup/barmanObjectStore/destinationPath
+  value: s3://leotsgo/nextcloud-v1
