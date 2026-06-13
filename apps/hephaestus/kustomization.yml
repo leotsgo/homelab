@@ -9,4 +9,4 @@ resources:
   - calibre
   - wallabag
   - paperless
-#  - nextcloud
+  - nextcloud
