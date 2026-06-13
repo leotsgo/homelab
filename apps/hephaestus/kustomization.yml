@@ -5,8 +5,8 @@ kind: Kustomization
 # data is staged: hostPath dirs + restic restore for PVC data, and the CNPG
 # barman base backup confirmed present for DB recovery.
 # Order: calibre -> wallabag -> paperless -> nextcloud.
-resources: []
-#  - calibre
+resources:
+  - calibre
 #  - wallabag
 #  - paperless
 #  - nextcloud
