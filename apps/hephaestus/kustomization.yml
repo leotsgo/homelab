@@ -8,5 +8,5 @@ kind: Kustomization
 resources:
   - calibre
   - wallabag
-#  - paperless
+  - paperless
 #  - nextcloud
