@@ -8,3 +8,6 @@ resources:
   - ../production/cert-manager
   - ../production/cloudnative-pg
   - ../production/sealed-secrets
+  # Vaultwarden→k8s secret syncer (antoniolago/vaultwarden-kubernetes-secrets). The path
+  # OFF sealed-secrets: items in Vaultwarden tagged `namespaces` become native k8s Secrets.
+  - ../base/vaultwarden-sync

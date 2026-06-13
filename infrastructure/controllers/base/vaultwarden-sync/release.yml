@@ -1,0 +1,26 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: vaultwarden-kubernetes-secrets
+  namespace: vaultwarden-kubernetes-secrets
+spec:
+  interval: 30m
+  releaseName: vaultwarden-kubernetes-secrets
+  chart:
+    spec:
+      chart: vaultwarden-kubernetes-secrets
+      version: "2.0.0"
+      sourceRef:
+        kind: HelmRepository
+        name: vaultwarden-kubernetes-secrets
+        namespace: vaultwarden-kubernetes-secrets
+  install:
+    createNamespace: false
+  values:
+    # The syncer's own Vaultwarden creds (BW_CLIENTID / BW_CLIENTSECRET /
+    # VAULTWARDEN__MASTERPASSWORD) come from the hand-applied secret
+    # `vaultwarden-kubernetes-secrets` in this namespace (the one bootstrap secret).
+    env:
+      config:
+        VAULTWARDEN__SERVERURL: "https://vault.leotsgo.dev"
+        SYNC__SYNCINTERVALSECONDS: "300"

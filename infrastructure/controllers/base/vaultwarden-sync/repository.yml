@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: vaultwarden-kubernetes-secrets
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: vaultwarden-kubernetes-secrets
+  namespace: vaultwarden-kubernetes-secrets
+spec:
+  type: oci
+  interval: 24h
+  url: oci://ghcr.io/antoniolago/charts
