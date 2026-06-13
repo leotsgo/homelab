@@ -3,5 +3,4 @@ kind: Kustomization
 
 resources:
 - ../../base/paperless
-- sealedsecret.yml
 - backup.yml 
