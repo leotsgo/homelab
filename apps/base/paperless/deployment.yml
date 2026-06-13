@@ -49,7 +49,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: paperless-secrets
-                  key: secret-key
+                  key: SECRET_KEY
             - name: PAPERLESS_URL
               value: "https://paperless.leotsgo.dev"
             - name: PAPERLESS_TIME_ZONE
