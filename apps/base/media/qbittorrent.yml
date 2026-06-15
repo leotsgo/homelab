@@ -34,7 +34,7 @@ spec:
             requests: { memory: "64Mi", cpu: "20m" }
             limits: { memory: "256Mi", cpu: "500m" }
         - name: qbittorrent
-          image: lscr.io/linuxserver/qbittorrent:5.1.2
+          image: lscr.io/linuxserver/qbittorrent:version-5.2.1_v2.0.13
           env:
             - { name: PUID, value: "1000" }
             - { name: PGID, value: "1000" }

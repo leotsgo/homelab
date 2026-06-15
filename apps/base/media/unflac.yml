@@ -44,6 +44,7 @@ spec:
           initContainers:
             - name: build-unflac
               image: golang:1.23-alpine
+              securityContext: { runAsUser: 0 }   # apk + go build need root; binary lands in /data/bin (exec'd by uid 1000)
               command:
                 - /bin/sh
                 - -c

@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: navidrome
-          image: deluan/navidrome:0.54.5
+          image: deluan/navidrome:0.62.0
           env:
             - { name: ND_MUSICFOLDER, value: "/music" }
             - { name: ND_DATAFOLDER, value: "/data" }
