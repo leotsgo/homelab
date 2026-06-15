@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: unflac-script
+  namespace: media
+data:
+  split.sh: |
+    #!/bin/sh
+    set -eu
+    BIN=/data/bin/unflac
+    SRC=/data/torrents/music-cue
+    OUT=/data/import/music
+    UNFLAC_URL="https://git.sr.ht/~ft/unflac/refs/download/v1.0.0/unflac-linux-amd64"  # verify/pin at deploy
+    mkdir -p "$OUT" /data/bin
+    command -v iconv >/dev/null 2>&1 || apk add --no-cache gnu-libiconv >/dev/null 2>&1 || true
+    if [ ! -x "$BIN" ]; then
+      echo "fetching unflac…"; wget -qO "$BIN" "$UNFLAC_URL"; chmod +x "$BIN"
+    fi
+    find "$SRC" -name '*.cue' | while read -r cue; do
+      dir=$(dirname "$cue")
+      [ -f "$dir/.unflac-done" ] && continue
+      echo "splitting: $cue"
+      tmpcue=$(mktemp); iconv -f WINDOWS-1251 -t UTF-8 "$cue" > "$tmpcue" 2>/dev/null || cp "$cue" "$tmpcue"
+      album=$(basename "$dir")
+      mkdir -p "$OUT/$album"
+      if "$BIN" -c "$tmpcue" -o "$OUT/$album" "$dir"/*.flac "$dir"/*.ape "$dir"/*.wv 2>/dev/null; then
+        touch "$dir/.unflac-done"; echo "done: $album"
+      else
+        echo "FAILED (left for retry): $album"
+      fi
+      rm -f "$tmpcue"
+    done
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: unflac
+  namespace: media
+spec:
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          securityContext: { runAsUser: 1000, runAsGroup: 1000, fsGroup: 1000 }
+          containers:
+            - name: unflac
+              image: jrottenberg/ffmpeg:7-alpine
+              command: ["/bin/sh", "/script/split.sh"]
+              volumeMounts:
+                - { name: data, mountPath: /data }
+                - { name: script, mountPath: /script }
+              resources:
+                requests: { memory: "128Mi", cpu: "100m" }
+                limits: { memory: "512Mi", cpu: "1000m" }
+          volumes:
+            - name: data
+              persistentVolumeClaim: { claimName: media-data }
+            - name: script
+              configMap: { name: unflac-script }
