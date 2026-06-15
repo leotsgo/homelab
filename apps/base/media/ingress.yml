@@ -1,0 +1,59 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: navidrome
+  namespace: media
+  annotations:
+    traefik.ingress.kubernetes.io/headers: |
+      browserXssFilter: true
+      contentTypeNosniff: true
+      forceSTSHeader: true
+      stsIncludeSubdomains: true
+      stsPreload: true
+      stsSeconds: 31536000
+      customFrameOptionsValue: "SAMEORIGIN"
+      referrerPolicy: "strict-origin-when-cross-origin"
+spec:
+  rules:
+    - host: "navidrome.leotsgo.dev"
+      http:
+        paths:
+          - { path: /, pathType: Prefix, backend: { service: { name: navidrome, port: { number: 4533 } } } }
+  tls:
+    - hosts: [ "navidrome.leotsgo.dev" ]
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata: { name: prowlarr, namespace: media }
+spec:
+  rules:
+    - host: "prowlarr.leotsgo.dev"
+      http:
+        paths:
+          - { path: /, pathType: Prefix, backend: { service: { name: prowlarr, port: { number: 9696 } } } }
+  tls:
+    - hosts: [ "prowlarr.leotsgo.dev" ]
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata: { name: lidarr, namespace: media }
+spec:
+  rules:
+    - host: "lidarr.leotsgo.dev"
+      http:
+        paths:
+          - { path: /, pathType: Prefix, backend: { service: { name: lidarr, port: { number: 8686 } } } }
+  tls:
+    - hosts: [ "lidarr.leotsgo.dev" ]
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata: { name: qbittorrent, namespace: media }
+spec:
+  rules:
+    - host: "qbittorrent.leotsgo.dev"
+      http:
+        paths:
+          - { path: /, pathType: Prefix, backend: { service: { name: qbittorrent, port: { number: 8080 } } } }
+  tls:
+    - hosts: [ "qbittorrent.leotsgo.dev" ]

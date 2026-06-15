@@ -6,3 +6,4 @@ resources:
   - lidarr.yml
   - navidrome.yml
   - unflac.yml
+  - ingress.yml
