@@ -11,3 +11,4 @@ resources:
   - paperless
   - nextcloud
   - couchdb
+  - media
