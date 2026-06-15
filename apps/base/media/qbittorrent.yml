@@ -23,9 +23,10 @@ spec:
               valueFrom: { secretKeyRef: { name: proton-wg, key: WIREGUARD_PRIVATE_KEY } }
             - name: WIREGUARD_ADDRESSES
               valueFrom: { secretKeyRef: { name: proton-wg, key: WIREGUARD_ADDRESSES } }
-            # Port-forwarding OFF until a NAT-PMP-enabled Proton WG config is provided
-            # (PF=on + PORT_FORWARD_ONLY made gluetun rotate servers hunting for PF -> flap).
-            - { name: VPN_PORT_FORWARDING, value: "off" }
+            # Port-forwarding ON — Proton WG config now has NAT-PMP/PF enabled (P2P server).
+            # NOTE: do NOT re-add PORT_FORWARD_ONLY — it caused server-rotation flapping.
+            - { name: VPN_PORT_FORWARDING, value: "on" }
+            - { name: VPN_PORT_FORWARDING_PROVIDER, value: "protonvpn" }
             - { name: FIREWALL_INPUT_PORTS, value: "8080" }
             - { name: FIREWALL_OUTBOUND_SUBNETS, value: "10.42.0.0/16,10.43.0.0/16" }
             - { name: TZ, value: "America/Sao_Paulo" }
