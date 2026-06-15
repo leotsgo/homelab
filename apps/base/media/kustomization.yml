@@ -2,3 +2,4 @@ resources:
   - namespace.yml
   - volumes.yml
   - qbittorrent.yml
+  - prowlarr.yml
