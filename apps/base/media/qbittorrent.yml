@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qbittorrent
+  namespace: media
+  labels: { app: qbittorrent }
+spec:
+  replicas: 1
+  strategy: { type: Recreate }
+  selector: { matchLabels: { app: qbittorrent } }
+  template:
+    metadata: { labels: { app: qbittorrent } }
+    spec:
+      containers:
+        - name: gluetun
+          image: qmcgaw/gluetun:v3.40.0
+          securityContext:
+            capabilities: { add: ["NET_ADMIN"] }
+          env:
+            - { name: VPN_SERVICE_PROVIDER, value: "protonvpn" }
+            - { name: VPN_TYPE, value: "wireguard" }
+            - name: WIREGUARD_PRIVATE_KEY
+              valueFrom: { secretKeyRef: { name: proton-wg, key: WIREGUARD_PRIVATE_KEY } }
+            - name: WIREGUARD_ADDRESSES
+              valueFrom: { secretKeyRef: { name: proton-wg, key: WIREGUARD_ADDRESSES } }
+            - { name: VPN_PORT_FORWARDING, value: "on" }
+            - { name: PORT_FORWARD_ONLY, value: "on" }
+            - { name: FIREWALL_INPUT_PORTS, value: "8080" }
+            - { name: FIREWALL_OUTBOUND_SUBNETS, value: "10.42.0.0/16,10.43.0.0/16" }
+            - { name: TZ, value: "America/Sao_Paulo" }
+          volumeMounts:
+            - { name: gluetun-tmp, mountPath: /tmp/gluetun }
+          resources:
+            requests: { memory: "64Mi", cpu: "20m" }
+            limits: { memory: "256Mi", cpu: "500m" }
+        - name: qbittorrent
+          image: lscr.io/linuxserver/qbittorrent:5.1.2
+          env:
+            - { name: PUID, value: "1000" }
+            - { name: PGID, value: "1000" }
+            - { name: TZ, value: "America/Sao_Paulo" }
+            - { name: WEBUI_PORT, value: "8080" }
+          volumeMounts:
+            - { name: config, mountPath: /config }
+            - { name: data, mountPath: /data }
+          resources:
+            requests: { memory: "256Mi", cpu: "50m" }
+            limits: { memory: "1Gi", cpu: "1000m" }
+      volumes:
+        - { name: gluetun-tmp, emptyDir: {} }
+        - name: config
+          persistentVolumeClaim: { claimName: qbittorrent-config }
+        - name: data
+          persistentVolumeClaim: { claimName: media-data }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: qbittorrent
+  namespace: media
+spec:
+  selector: { app: qbittorrent }
+  ports:
+    - { name: webui, port: 8080, targetPort: 8080 }

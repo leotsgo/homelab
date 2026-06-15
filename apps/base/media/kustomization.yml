@@ -1,3 +1,4 @@
 resources:
   - namespace.yml
   - volumes.yml
+  - qbittorrent.yml
