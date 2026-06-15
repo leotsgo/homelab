@@ -29,7 +29,9 @@ spec:
             - { name: VPN_PORT_FORWARDING_PROVIDER, value: "protonvpn" }
             # Auto-set qB's listen port to the forwarded port on every PF change.
             - { name: VPN_PORT_FORWARDING_UP_COMMAND, value: "/bin/sh /gluetun-scripts/pf-up.sh" }
-            - { name: FIREWALL_INPUT_PORTS, value: "8080" }
+            # HTTP proxy (:8888) so other pods (Prowlarr) can egress through Proton.
+            - { name: HTTPPROXY, value: "on" }
+            - { name: FIREWALL_INPUT_PORTS, value: "8080,8888" }
             - { name: FIREWALL_OUTBOUND_SUBNETS, value: "10.42.0.0/16,10.43.0.0/16" }
             - { name: TZ, value: "America/Sao_Paulo" }
           volumeMounts:
@@ -70,3 +72,4 @@ spec:
   selector: { app: qbittorrent }
   ports:
     - { name: webui, port: 8080, targetPort: 8080 }
+    - { name: proxy, port: 8888, targetPort: 8888 }
