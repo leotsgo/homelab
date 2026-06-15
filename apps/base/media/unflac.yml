@@ -8,7 +8,7 @@ data:
     #!/bin/sh
     set -eu
     BIN=/data/bin/unflac
-    SRC=/data/torrents/music-cue
+    SRC=/data/torrents/music
     OUT=/data/import/music
     mkdir -p "$OUT"
     if [ ! -x "$BIN" ]; then echo "unflac missing (initContainer build failed?)"; exit 1; fi
