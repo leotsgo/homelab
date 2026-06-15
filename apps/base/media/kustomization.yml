@@ -3,3 +3,4 @@ resources:
   - volumes.yml
   - qbittorrent.yml
   - prowlarr.yml
+  - lidarr.yml

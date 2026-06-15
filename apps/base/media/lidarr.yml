@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lidarr
+  namespace: media
+  labels: { app: lidarr }
+spec:
+  replicas: 1
+  strategy: { type: Recreate }
+  selector: { matchLabels: { app: lidarr } }
+  template:
+    metadata: { labels: { app: lidarr } }
+    spec:
+      containers:
+        - name: lidarr
+          image: lscr.io/linuxserver/lidarr:2.9.6
+          env:
+            - { name: PUID, value: "1000" }
+            - { name: PGID, value: "1000" }
+            - { name: TZ, value: "America/Sao_Paulo" }
+          ports: [ { containerPort: 8686 } ]
+          volumeMounts:
+            - { name: config, mountPath: /config }
+            - { name: data, mountPath: /data }
+          resources:
+            requests: { memory: "256Mi", cpu: "50m" }
+            limits: { memory: "1Gi", cpu: "1000m" }
+      volumes:
+        - name: config
+          persistentVolumeClaim: { claimName: lidarr-config }
+        - name: data
+          persistentVolumeClaim: { claimName: media-data }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lidarr
+  namespace: media
+spec:
+  selector: { app: lidarr }
+  ports: [ { port: 8686, targetPort: 8686 } ]
