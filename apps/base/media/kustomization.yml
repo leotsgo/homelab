@@ -4,3 +4,4 @@ resources:
   - qbittorrent.yml
   - prowlarr.yml
   - lidarr.yml
+  - navidrome.yml
