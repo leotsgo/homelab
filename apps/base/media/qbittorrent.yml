@@ -27,11 +27,14 @@ spec:
             # NOTE: do NOT re-add PORT_FORWARD_ONLY — it caused server-rotation flapping.
             - { name: VPN_PORT_FORWARDING, value: "on" }
             - { name: VPN_PORT_FORWARDING_PROVIDER, value: "protonvpn" }
+            # Auto-set qB's listen port to the forwarded port on every PF change.
+            - { name: VPN_PORT_FORWARDING_UP_COMMAND, value: "/bin/sh /gluetun-scripts/pf-up.sh" }
             - { name: FIREWALL_INPUT_PORTS, value: "8080" }
             - { name: FIREWALL_OUTBOUND_SUBNETS, value: "10.42.0.0/16,10.43.0.0/16" }
             - { name: TZ, value: "America/Sao_Paulo" }
           volumeMounts:
             - { name: gluetun-tmp, mountPath: /tmp/gluetun }
+            - { name: scripts, mountPath: /gluetun-scripts/pf-up.sh, subPath: pf-up.sh }
           resources:
             requests: { memory: "64Mi", cpu: "20m" }
             limits: { memory: "256Mi", cpu: "500m" }
@@ -45,11 +48,14 @@ spec:
           volumeMounts:
             - { name: config, mountPath: /config }
             - { name: data, mountPath: /data }
+            - { name: scripts, mountPath: /custom-cont-init.d/10-localhostauth.sh, subPath: 10-localhostauth.sh }
           resources:
             requests: { memory: "256Mi", cpu: "50m" }
             limits: { memory: "1Gi", cpu: "1000m" }
       volumes:
         - { name: gluetun-tmp, emptyDir: {} }
+        - name: scripts
+          configMap: { name: qbittorrent-scripts, defaultMode: 0755 }
         - name: config
           persistentVolumeClaim: { claimName: qbittorrent-config }
         - name: data

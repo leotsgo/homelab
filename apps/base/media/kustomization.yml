@@ -2,6 +2,7 @@ resources:
   - namespace.yml
   - volumes.yml
   - qbittorrent.yml
+  - qbittorrent-scripts.yml
   - prowlarr.yml
   - lidarr.yml
   - navidrome.yml
