@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: couchdb
+  namespace: couchdb
+  annotations:
+    # NOTE: contentSecurityPolicy below only affects the in-browser Fauxton UI
+    # (/_utils). Obsidian LiveSync talks to the API via fetch and is unaffected;
+    # CouchDB's own [cors] config (configmap) is what allows the app origins.
+    traefik.ingress.kubernetes.io/headers: |
+      browserXssFilter: true
+      contentTypeNosniff: true
+      forceSTSHeader: true
+      stsIncludeSubdomains: true
+      stsPreload: true
+      stsSeconds: 31536000
+      customFrameOptionsValue: "SAMEORIGIN"
+      contentSecurityPolicy: "default-src 'self'; script-src 'self'"
+      referrerPolicy: "strict-origin-when-cross-origin"
+      permissionsPolicy: "camera=(), microphone=(), geolocation=()"
+spec:
+  rules:
+    - host: "couchdb.leotsgo.dev"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: couchdb
+                port:
+                  number: 5984
+  tls:
+    - hosts:
+        - "couchdb.leotsgo.dev"

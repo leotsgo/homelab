@@ -10,3 +10,4 @@ resources:
   - wallabag
   - paperless
   - nextcloud
+  - couchdb

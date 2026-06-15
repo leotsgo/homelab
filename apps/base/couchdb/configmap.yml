@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: couchdb-config
+  namespace: couchdb
+data:
+  # Mounted read-only into /opt/couchdb/etc/local.d/ (admin creds come from the
+  # syncer secret via env). Tuned for Obsidian LiveSync:
+  #  - single_node: auto-creates _users/_replicator/_global_changes on first boot
+  #  - require_valid_user(_except_for_up): lock the DB, but keep /_up open for probes
+  #  - max sizes: LiveSync ships large chunked requests/documents
+  #  - cors: REQUIRED for the Obsidian desktop/mobile app origins
+  10-livesync.ini: |
+    [couchdb]
+    single_node = true
+    max_document_size = 50000000
+
+    [chttpd]
+    bind_address = 0.0.0.0
+    require_valid_user = true
+    require_valid_user_except_for_up = true
+    max_http_request_size = 4294967296
+    enable_cors = true
+
+    [chttpd_auth]
+    require_valid_user = true
+
+    [httpd]
+    enable_cors = true
+    WWW-Authenticate = Basic realm="couchdb"
+
+    [cors]
+    origins = app://obsidian.md,capacitor://localhost,http://localhost
+    credentials = true
+    headers = accept, authorization, content-type, origin, referer
+    methods = GET, PUT, POST, HEAD, DELETE
+    max_age = 3600
