@@ -10,25 +10,19 @@ data:
     BIN=/data/bin/unflac
     SRC=/data/torrents/music-cue
     OUT=/data/import/music
-    UNFLAC_URL="https://git.sr.ht/~ft/unflac/refs/download/v1.0.0/unflac-linux-amd64"  # verify/pin at deploy
-    mkdir -p "$OUT" /data/bin
-    command -v iconv >/dev/null 2>&1 || apk add --no-cache gnu-libiconv >/dev/null 2>&1 || true
-    if [ ! -x "$BIN" ]; then
-      echo "fetching unflac…"; wget -qO "$BIN" "$UNFLAC_URL"; chmod +x "$BIN"
-    fi
+    mkdir -p "$OUT"
+    if [ ! -x "$BIN" ]; then echo "unflac missing (initContainer build failed?)"; exit 1; fi
+    # unflac takes the .cue as positional INPUT; it auto-detects cue encoding and finds
+    # the audio file in the cue's dir, writing <Artist>/<Album>/<tracks> under -o.
     find "$SRC" -name '*.cue' | while read -r cue; do
       dir=$(dirname "$cue")
       [ -f "$dir/.unflac-done" ] && continue
       echo "splitting: $cue"
-      tmpcue=$(mktemp); iconv -f WINDOWS-1251 -t UTF-8 "$cue" > "$tmpcue" 2>/dev/null || cp "$cue" "$tmpcue"
-      album=$(basename "$dir")
-      mkdir -p "$OUT/$album"
-      if "$BIN" -c "$tmpcue" -o "$OUT/$album" "$dir"/*.flac "$dir"/*.ape "$dir"/*.wv 2>/dev/null; then
-        touch "$dir/.unflac-done"; echo "done: $album"
+      if "$BIN" -o "$OUT" "$cue"; then
+        touch "$dir/.unflac-done"; echo "done: $dir"
       else
-        echo "FAILED (left for retry): $album"
+        echo "FAILED (left for retry): $dir"
       fi
-      rm -f "$tmpcue"
     done
 ---
 apiVersion: batch/v1
@@ -47,6 +41,23 @@ spec:
         spec:
           restartPolicy: OnFailure
           securityContext: { runAsUser: 1000, runAsGroup: 1000, fsGroup: 1000 }
+          initContainers:
+            - name: build-unflac
+              image: golang:1.23-alpine
+              command:
+                - /bin/sh
+                - -c
+                - 'if [ ! -x /data/bin/unflac ]; then apk add --no-cache git >/dev/null && GOBIN=/data/bin go install git.sr.ht/~ft/unflac@latest; fi'
+              env:
+                - { name: HOME, value: "/tmp" }
+                - { name: GOPATH, value: "/tmp/go" }
+                - { name: GOCACHE, value: "/tmp/gocache" }
+                - { name: GOFLAGS, value: "-mod=mod" }
+              volumeMounts:
+                - { name: data, mountPath: /data }
+              resources:
+                requests: { memory: "128Mi", cpu: "100m" }
+                limits: { memory: "768Mi", cpu: "1500m" }
           containers:
             - name: unflac
               image: jrottenberg/ffmpeg:7-alpine
