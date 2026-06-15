@@ -1,0 +1,95 @@
+# --- shared media library/downloads (hardlink-capable: one volume for qB+unflac+Lidarr) ---
+apiVersion: v1
+kind: PersistentVolume
+metadata: { name: media-data, namespace: media }
+spec:
+  capacity: { storage: 150Gi }
+  accessModes: [ReadWriteOnce]
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: media
+  hostPath: { path: /var/data/media/ }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: media-data, namespace: media }
+spec:
+  accessModes: [ReadWriteOnce]
+  resources: { requests: { storage: 150Gi } }
+  storageClassName: media
+  volumeName: media-data
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata: { name: qbittorrent-config, namespace: media }
+spec:
+  capacity: { storage: 1Gi }
+  accessModes: [ReadWriteOnce]
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: qbittorrent
+  hostPath: { path: /var/data/qbittorrent/ }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: qbittorrent-config, namespace: media }
+spec:
+  accessModes: [ReadWriteOnce]
+  resources: { requests: { storage: 1Gi } }
+  storageClassName: qbittorrent
+  volumeName: qbittorrent-config
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata: { name: prowlarr-config, namespace: media }
+spec:
+  capacity: { storage: 1Gi }
+  accessModes: [ReadWriteOnce]
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: prowlarr
+  hostPath: { path: /var/data/prowlarr/ }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: prowlarr-config, namespace: media }
+spec:
+  accessModes: [ReadWriteOnce]
+  resources: { requests: { storage: 1Gi } }
+  storageClassName: prowlarr
+  volumeName: prowlarr-config
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata: { name: lidarr-config, namespace: media }
+spec:
+  capacity: { storage: 2Gi }
+  accessModes: [ReadWriteOnce]
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: lidarr
+  hostPath: { path: /var/data/lidarr/ }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: lidarr-config, namespace: media }
+spec:
+  accessModes: [ReadWriteOnce]
+  resources: { requests: { storage: 2Gi } }
+  storageClassName: lidarr
+  volumeName: lidarr-config
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata: { name: navidrome-data, namespace: media }
+spec:
+  capacity: { storage: 2Gi }
+  accessModes: [ReadWriteOnce]
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: navidrome
+  hostPath: { path: /var/data/navidrome/ }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: navidrome-data, namespace: media }
+spec:
+  accessModes: [ReadWriteOnce]
+  resources: { requests: { storage: 2Gi } }
+  storageClassName: navidrome
+  volumeName: navidrome-data
