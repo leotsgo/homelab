@@ -1,12 +1,14 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-# Same controllers as production, MINUS image-automation: two clusters running
-# ImageUpdateAutomation against the same git branch would race on pushes.
-# cert-manager / cnpg are reused verbatim from the production
-# overlays (identical config; DNS-01 issuer + wildcard cert work LAN-only).
+# Hephaestus (the only cluster) — references base controllers directly.
+# The former `production` middle overlay was removed 2026-06-16; cert-manager's
+# version pin (1.13.3) was rolled into base, and cnpg's "patch" was a no-op
+# (same version as base). image-automation was deleted (production cluster is
+# gone and hephaestus deliberately doesn't run it — two clusters pushing
+# image-update commits to the same git branch would race).
 resources:
-  - ../production/cert-manager
-  - ../production/cloudnative-pg
-  # Vaultwarden→k8s secret syncer (antoniolago/vaultwarden-kubernetes-secrets). The path
-  # OFF sealed-secrets: items in Vaultwarden tagged `namespaces` become native k8s Secrets.
+  - ../base/cert-manager
+  - ../base/cloudnative-pg
+  # Vaultwarden→k8s secret syncer (antoniolago/vaultwarden-kubernetes-secrets).
+  # Items in Vaultwarden tagged `namespaces` become native k8s Secrets.
   - ../base/vaultwarden-sync

@@ -18,9 +18,9 @@ metadata:
   namespace: flux-system
 spec:
   interval: 1h
-  # Reused verbatim from production: cert-manager ClusterIssuer (DNS-01/Cloudflare),
-  # the *.leotsgo.dev wildcard Certificate, and the Traefik tlsstore default cert.
-  path: ./infrastructure/configs/production
+  # cert-manager ClusterIssuer (DNS-01/Cloudflare), the *.leotsgo.dev wildcard
+  # Certificate, and the Traefik tlsstore default cert.
+  path: ./infrastructure/configs/hephaestus
   prune: true
   sourceRef:
     kind: GitRepository
