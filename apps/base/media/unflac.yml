@@ -18,11 +18,21 @@ data:
       dir=$(dirname "$cue")
       [ -f "$dir/.unflac-done" ] && continue
       echo "splitting: $cue"
-      if "$BIN" -o "$OUT" "$cue"; then
+      # unflac's parser chokes on stray apostrophes in unquoted REM lines
+      # (e.g. `REM COMMENT ... Sander's tube preamp ...`). Run unflac against a
+      # sanitized copy in a tmpdir with the audio files symlinked in so the
+      # `FILE "..."` directive still resolves.
+      tmp=$(mktemp -d)
+      for f in "$dir"/*; do ln -s "$f" "$tmp/$(basename "$f")"; done
+      cue_name=$(basename "$cue")
+      rm -f "$tmp/$cue_name"
+      grep -v '^REM ' "$cue" > "$tmp/$cue_name"
+      if "$BIN" -o "$OUT" "$tmp/$cue_name"; then
         touch "$dir/.unflac-done"; echo "done: $dir"
       else
         echo "FAILED (left for retry): $dir"
       fi
+      rm -rf "$tmp"
     done
 ---
 apiVersion: batch/v1
@@ -67,8 +77,8 @@ spec:
                 - { name: data, mountPath: /data }
                 - { name: script, mountPath: /script }
               resources:
-                requests: { memory: "128Mi", cpu: "100m" }
-                limits: { memory: "512Mi", cpu: "1000m" }
+                requests: { memory: "256Mi", cpu: "100m" }
+                limits: { memory: "4Gi", cpu: "2000m" }
           volumes:
             - name: data
               persistentVolumeClaim: { claimName: media-data }
