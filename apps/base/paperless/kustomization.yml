@@ -6,8 +6,9 @@ namespace: paperless
 resources:
 - namespace.yml
 - database.yml
+- backup.yml
 - redis.yml
 - volumes.yml
 - deployment.yml
 - service.yml
-- ingress.yml 
+- ingress.yml

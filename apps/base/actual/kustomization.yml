@@ -1,6 +1,0 @@
-resources:
-  - namespace.yml
-  - volumes.yml
-  - ingress.yml
-  - service.yml
-  - deployment.yml

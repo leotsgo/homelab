@@ -1,4 +1,3 @@
-# nextcloud-db-secret now comes from Vaultwarden via the syncer (was plaintext here).
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
@@ -20,22 +19,26 @@ spec:
 
   enableSuperuserAccess: true
 
+  # Cluster was bootstrapped via recovery from the Backblaze B2 backup
+  # (was a one-time migration from the VPS production cluster on 2026-06).
+  # Subsequent Flux applies are no-ops on bootstrap (cluster already exists);
+  # rebuilds-from-scratch will re-do the recovery from the same B2 path.
   bootstrap:
-    initdb:
+    recovery:
+      source: nextcloud-cluster
       database: nextcloud
       owner: nextcloud
-      secret:
-        name: nextcloud-db-secret
 
   backup:
     barmanObjectStore:
-      destinationPath: s3://leotsgo/nextcloud
+      destinationPath: s3://leotsgo-data/nextcloud-db
+      endpointURL: https://s3.us-east-005.backblazeb2.com
       s3Credentials:
         accessKeyId:
-          name: aws
+          name: b2
           key: ACCESS_KEY_ID
         secretAccessKey:
-          name: aws
+          name: b2
           key: ACCESS_SECRET_KEY
       wal:
         compression: gzip
@@ -46,14 +49,15 @@ spec:
   externalClusters:
     - name: nextcloud-cluster
       barmanObjectStore:
-        destinationPath: s3://leotsgo/nextcloud
+        destinationPath: s3://leotsgo-data/nextcloud-db
+        endpointURL: https://s3.us-east-005.backblazeb2.com
         serverName: nextcloud-cluster
         s3Credentials:
           accessKeyId:
-            name: aws
+            name: b2
             key: ACCESS_KEY_ID
           secretAccessKey:
-            name: aws
+            name: b2
             key: ACCESS_SECRET_KEY
 
   managed:

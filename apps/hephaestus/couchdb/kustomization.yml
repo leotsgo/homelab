@@ -1,8 +1,0 @@
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-# couchdb: no database, single hostPath PV (/var/data/couchdb/data) — binds once
-# the dir exists on hephaestus (chown 5984:5984) and the `couchdb-secret` item exists
-# in the k3s@ Vaultwarden vault (namespaces: couchdb) so the syncer materializes it.
-# Production overlay reused verbatim.
-resources:
-  - ../../production/couchdb
