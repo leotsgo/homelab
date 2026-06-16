@@ -16,21 +16,29 @@ data:
     # the audio file in the cue's dir, writing <Artist>/<Album>/<tracks> under -o.
     find "$SRC" -name '*.cue' | while read -r cue; do
       dir=$(dirname "$cue")
+      # Skip if already processed — success OR failure. Failed torrents have
+      # data problems (malformed cue / missing audio) we can't fix here; without
+      # this gate the cronjob retries them forever and spams logs every 5 min.
+      # To retry one after fixing the source: rm "$dir/.unflac-failed".
       [ -f "$dir/.unflac-done" ] && continue
+      [ -f "$dir/.unflac-failed" ] && continue
       echo "splitting: $cue"
-      # unflac's parser chokes on stray apostrophes in unquoted REM lines
-      # (e.g. `REM COMMENT ... Sander's tube preamp ...`). Run unflac against a
-      # sanitized copy in a tmpdir with the audio files symlinked in so the
-      # `FILE "..."` directive still resolves.
+      # unflac's parser only handles a minimal cue grammar (FILE / TRACK / TITLE /
+      # PERFORMER / INDEX). EAC-style rips often emit extra commands that confuse
+      # it: REM (apostrophes break parsing), SONGWRITER, ISRC, CATALOG, PREGAP,
+      # POSTGAP, FLAGS, CDTEXTFILE — all are pure metadata, none affect splitting.
+      # Strip them into a tmpdir copy, symlink the audio files in so FILE refs
+      # still resolve.
       tmp=$(mktemp -d)
       for f in "$dir"/*; do ln -s "$f" "$tmp/$(basename "$f")"; done
       cue_name=$(basename "$cue")
       rm -f "$tmp/$cue_name"
-      grep -v '^REM ' "$cue" > "$tmp/$cue_name"
+      grep -vE '^[[:space:]]*(REM|SONGWRITER|ISRC|CATALOG|PREGAP|POSTGAP|FLAGS|CDTEXTFILE)([[:space:]]|$)' "$cue" > "$tmp/$cue_name"
       if "$BIN" -o "$OUT" "$tmp/$cue_name"; then
         touch "$dir/.unflac-done"; echo "done: $dir"
       else
-        echo "FAILED (left for retry): $dir"
+        date -u +%FT%TZ > "$dir/.unflac-failed"
+        echo "FAILED (marked .unflac-failed, will skip — rm the marker to retry): $dir"
       fi
       rm -rf "$tmp"
     done
