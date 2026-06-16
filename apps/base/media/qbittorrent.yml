@@ -11,6 +11,13 @@ spec:
   template:
     metadata: { labels: { app: qbittorrent } }
     spec:
+      # ndots:1 so external tracker domains (e.g. bt2.t-ru.org) resolve as absolute
+      # first. k8s default ndots:5 makes libtorrent's async resolver exhaust the
+      # search-domain lookups and give up (Host not found) → 0 seeds/peers, even
+      # though nslookup/curl work.
+      dnsConfig:
+        options:
+          - { name: ndots, value: "1" }
       containers:
         - name: gluetun
           image: qmcgaw/gluetun:v3.40.0
