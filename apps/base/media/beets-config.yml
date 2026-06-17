@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: beets-config
+  namespace: media
+data:
+  # beets config for soulbeet (Soulseek-acquired music pipeline).
+  # Album-mode matching is intentionally permissive — Soulbeet's README
+  # recommends these thresholds since beets runs in quiet mode and would
+  # otherwise skip imports needing user intervention.
+  config.yaml: |
+    directory: /music/soulbeet
+    library: /music/soulbeet/.beets_library.db
+    import:
+      copy: yes               # copy from /downloads into the library; leave the raw file behind
+      write: yes              # write tags into the audio files
+      timid: no               # auto-accept confident matches
+    match:
+      strong_rec_thresh: 0.10
+      distance_weights:
+        missing_tracks: 0.1
+    fetchart:
+      auto: yes
+      cover_format: jpg
+    embedart:
+      auto: yes
+    replaygain:
+      auto: yes
+      backend: ffmpeg
+    chroma:
+      auto: yes
+    plugins: fetchart embedart replaygain chroma lyrics info
+    paths:
+      default: $albumartist/$album%aunique{}/$track $title
+      singleton: Non-Album/$artist/$title
+      comp: Compilations/$album%aunique{}/$track $title
