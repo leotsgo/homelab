@@ -18,6 +18,26 @@ spec:
       dnsConfig:
         options:
           - { name: ndots, value: "1" }
+      # gluetun-in-k8s gotcha: when the gluetun container restarts in place (kubelet
+      # restart, healthcheck-triggered VPN restart) the pod's netns is preserved, so
+      # the `ip -6 rule add ... table 51820` from the previous instance is still in
+      # the kernel. New gluetun bails with "adding ip rule 101: file exists" and
+      # backs off 4h, taking the HTTP proxy down with it (Prowlarr sees 503 from
+      # the proxy → "Unable to connect to indexer"). Clear stale gluetun ip rules
+      # before it starts. See https://github.com/qdm12/gluetun-wiki/blob/main/setup/advanced/kubernetes.md#adding-ipv6-rule--file-exists
+      initContainers:
+        - name: clear-stale-gluetun-rules
+          image: alpine:3.20
+          securityContext:
+            capabilities: { add: ["NET_ADMIN"] }
+          command:
+            - sh
+            - -c
+            - |
+              set -eu
+              ip -6 rule del from all to all table 51820 2>/dev/null || true
+              ip -4 rule del from all to all table 51820 2>/dev/null || true
+              echo "cleared any stale gluetun routing rules from prior netns lifetime"
       containers:
         - name: gluetun
           image: qmcgaw/gluetun:v3.40.0
