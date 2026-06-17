@@ -1,0 +1,113 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: slskd
+  namespace: media
+  labels: { app: slskd }
+spec:
+  replicas: 1
+  strategy: { type: Recreate }
+  selector: { matchLabels: { app: slskd } }
+  template:
+    metadata: { labels: { app: slskd } }
+    spec:
+      # gluetun-in-k8s gotcha (same one that bit qbittorrent — commit ce4902c):
+      # when gluetun restarts in place (kubelet, internal healthcheck-triggered
+      # VPN restart) the pod netns is preserved, so a stale
+      # `ip rule add ... table 51820` from the previous gluetun instance blocks
+      # the new one and gluetun back-offs for 4h16m. Init container deletes it
+      # before gluetun starts.
+      # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/advanced/kubernetes.md
+      initContainers:
+        - name: clear-stale-gluetun-rules
+          image: alpine:3.20
+          securityContext:
+            capabilities: { add: ["NET_ADMIN"] }
+          command:
+            - sh
+            - -c
+            - |
+              set -eu
+              ip -6 rule del from all to all table 51820 2>/dev/null || true
+              ip -4 rule del from all to all table 51820 2>/dev/null || true
+              echo "cleared any stale gluetun routing rules from prior netns lifetime"
+      containers:
+        - name: gluetun
+          image: qmcgaw/gluetun:v3.40.0
+          securityContext:
+            capabilities: { add: ["NET_ADMIN"] }
+          env:
+            - { name: VPN_SERVICE_PROVIDER, value: "protonvpn" }
+            - { name: VPN_TYPE, value: "wireguard" }
+            - name: WIREGUARD_PRIVATE_KEY
+              valueFrom: { secretKeyRef: { name: proton-wg-slskd, key: WIREGUARD_PRIVATE_KEY } }
+            - name: WIREGUARD_ADDRESSES
+              valueFrom: { secretKeyRef: { name: proton-wg-slskd, key: WIREGUARD_ADDRESSES } }
+            - { name: VPN_PORT_FORWARDING, value: "on" }
+            - { name: VPN_PORT_FORWARDING_PROVIDER, value: "protonvpn" }
+            - { name: VPN_PORT_FORWARDING_UP_COMMAND, value: "/bin/sh /slskd-scripts/slskd-pf-up.sh" }
+            - { name: FIREWALL_INPUT_PORTS, value: "5030" }
+            - { name: FIREWALL_OUTBOUND_SUBNETS, value: "10.42.0.0/16,10.43.0.0/16" }
+            - { name: TZ, value: "America/Sao_Paulo" }
+          volumeMounts:
+            - { name: gluetun-tmp,    mountPath: /tmp/gluetun }
+            - { name: scripts,        mountPath: /slskd-scripts/slskd-pf-up.sh, subPath: slskd-pf-up.sh }
+            - { name: slskd-api-key,  mountPath: /run/secrets/slskd-api-key, subPath: SLSKD_API_KEY, readOnly: true }
+          resources:
+            requests: { memory: "64Mi",  cpu: "20m" }
+            limits:   { memory: "256Mi", cpu: "500m" }
+        - name: slskd
+          image: slskd/slskd:latest
+          env:
+            - { name: SLSKD_REMOTE_CONFIGURATION, value: "true" }
+            # SLSKD_USERNAME/PASSWORD set the web UI admin via slskd's
+            # SLSKD_<UPPERCASE_KEY> env-override convention.
+            - name: SLSKD_USERNAME
+              valueFrom: { secretKeyRef: { name: slskd-secrets, key: SLSKD_USERNAME } }
+            - name: SLSKD_PASSWORD
+              valueFrom: { secretKeyRef: { name: slskd-secrets, key: SLSKD_PASSWORD } }
+            - { name: SLSKD_HTTP_PORT, value: "5030" }
+            - { name: TZ,   value: "America/Sao_Paulo" }
+            - { name: PUID, value: "1000" }
+            - { name: PGID, value: "1000" }
+          volumeMounts:
+            - { name: config,    mountPath: /app }
+            - { name: downloads, mountPath: /downloads }
+          resources:
+            requests: { memory: "128Mi", cpu: "50m" }
+            limits:   { memory: "512Mi", cpu: "1000m" }
+      volumes:
+        - { name: gluetun-tmp, emptyDir: {} }
+        - name: scripts
+          configMap: { name: slskd-scripts, defaultMode: 0755 }
+        - name: slskd-api-key
+          secret:
+            secretName: slskd-secrets
+            items:
+              - { key: SLSKD_API_KEY, path: SLSKD_API_KEY, mode: 0400 }
+        - name: config
+          persistentVolumeClaim: { claimName: slskd-config }
+        - name: downloads
+          persistentVolumeClaim: { claimName: slskd-downloads }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: slskd
+  namespace: media
+spec:
+  selector: { app: slskd }
+  ports:
+    - { name: webui, port: 5030, targetPort: 5030 }
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata: { name: slskd, namespace: media }
+spec:
+  rules:
+    - host: "slskd.leotsgo.dev"
+      http:
+        paths:
+          - { path: /, pathType: Prefix, backend: { service: { name: slskd, port: { number: 5030 } } } }
+  tls:
+    - hosts: [ "slskd.leotsgo.dev" ]
