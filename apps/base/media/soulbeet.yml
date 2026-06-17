@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: soulbeet
+  namespace: media
+  labels: { app: soulbeet }
+spec:
+  replicas: 1
+  strategy: { type: Recreate }
+  selector: { matchLabels: { app: soulbeet } }
+  template:
+    metadata: { labels: { app: soulbeet } }
+    spec:
+      containers:
+        - name: soulbeet
+          image: docker.io/docccccc/soulbeet:full
+          env:
+            - { name: DATABASE_URL,     value: "sqlite:/data/soulbeet.db" }
+            - { name: DOWNLOAD_PATH,    value: "/downloads" }
+            - { name: BEETS_CONFIG,     value: "/config/config.yaml" }
+            - { name: BEETS_ALBUM_MODE, value: "true" }
+            - { name: NAVIDROME_URL,    value: "http://navidrome.media.svc.cluster.local:4533" }
+            - { name: TZ,               value: "America/Sao_Paulo" }
+            - name: SECRET_KEY
+              valueFrom: { secretKeyRef: { name: soulbeet-secrets, key: SECRET_KEY } }
+          ports:
+            - { containerPort: 9765 }
+          volumeMounts:
+            - { name: data,         mountPath: /data }
+            - { name: downloads,    mountPath: /downloads }
+            # Library output goes inside the existing media-data PVC so Navidrome
+            # serves it automatically (Navidrome already mounts subPath
+            # library/music read-only at /music). soulbeet writes to its own
+            # subPath (library/music/soulbeet) — no cross-contamination with
+            # Lidarr's siblings under library/music/.
+            - { name: media-data,   mountPath: /music/soulbeet, subPath: library/music/soulbeet }
+            - { name: beets-config, mountPath: /config/config.yaml, subPath: config.yaml }
+          resources:
+            requests: { memory: "256Mi", cpu: "50m" }
+            limits:   { memory: "1Gi",   cpu: "1500m" }
+      volumes:
+        - name: data
+          persistentVolumeClaim: { claimName: soulbeet-data }
+        - name: downloads
+          persistentVolumeClaim: { claimName: slskd-downloads }
+        - name: media-data
+          persistentVolumeClaim: { claimName: media-data }
+        - name: beets-config
+          configMap: { name: beets-config }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: soulbeet
+  namespace: media
+spec:
+  selector: { app: soulbeet }
+  ports:
+    - { name: webui, port: 9765, targetPort: 9765 }
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata: { name: soulbeet, namespace: media }
+spec:
+  rules:
+    - host: "soulbeet.leotsgo.dev"
+      http:
+        paths:
+          - { path: /, pathType: Prefix, backend: { service: { name: soulbeet, port: { number: 9765 } } } }
+  tls:
+    - hosts: [ "soulbeet.leotsgo.dev" ]
