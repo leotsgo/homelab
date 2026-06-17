@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: slskd-scripts
+  namespace: media
+data:
+  # gluetun VPN_PORT_FORWARDING_UP_COMMAND target — fires each time Proton's PF
+  # port rotates. PATCHes slskd's `soulseek.listen_port` so incoming peer
+  # connections keep working across rotations. Retries until slskd's API is
+  # reachable (handles cold-start race: gluetun comes up before slskd's HTTP
+  # server is ready).
+  slskd-pf-up.sh: |
+    #!/bin/sh
+    PORT="$(cat /tmp/gluetun/forwarded_port 2>/dev/null)"
+    [ -n "$PORT" ] || exit 0
+    API_KEY="$(cat /run/secrets/slskd-api-key 2>/dev/null)"
+    [ -n "$API_KEY" ] || { echo "pf-up: no API key mounted at /run/secrets/slskd-api-key"; exit 0; }
+    i=0
+    while [ "$i" -lt 12 ]; do
+      if wget -q --header="X-API-Key: $API_KEY" \
+           --header='Content-Type: application/json' \
+           --post-data="{\"soulseek\":{\"listen_port\":$PORT}}" \
+           --method=PATCH \
+           http://127.0.0.1:5030/api/v0/options -O- >/dev/null 2>&1; then
+        echo "pf-up: set slskd listen_port=$PORT"; exit 0
+      fi
+      i=$((i+1)); sleep 5
+    done
+    echo "pf-up: failed to set port $PORT after retries"; exit 0
