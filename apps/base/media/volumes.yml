@@ -93,3 +93,66 @@ spec:
   resources: { requests: { storage: 2Gi } }
   storageClassName: navidrome
   volumeName: navidrome-data
+---
+# slskd config + sqlite (slskd-only).
+apiVersion: v1
+kind: PersistentVolume
+metadata: { name: slskd-config, namespace: media }
+spec:
+  capacity: { storage: 1Gi }
+  accessModes: [ReadWriteOnce]
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: slskd-config
+  hostPath: { path: /var/data/slskd/config/ }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: slskd-config, namespace: media }
+spec:
+  accessModes: [ReadWriteOnce]
+  resources: { requests: { storage: 1Gi } }
+  storageClassName: slskd-config
+  volumeName: slskd-config
+---
+# slskd raw downloads — shared between slskd (writes) and soulbeet (reads, then
+# beets imports → /music/soulbeet which lives inside media-data via subPath).
+apiVersion: v1
+kind: PersistentVolume
+metadata: { name: slskd-downloads, namespace: media }
+spec:
+  capacity: { storage: 50Gi }
+  accessModes: [ReadWriteOnce]
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: slskd-downloads
+  hostPath: { path: /var/data/slskd/downloads/ }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: slskd-downloads, namespace: media }
+spec:
+  accessModes: [ReadWriteOnce]
+  resources: { requests: { storage: 50Gi } }
+  storageClassName: slskd-downloads
+  volumeName: slskd-downloads
+---
+# soulbeet sqlite db (soulbeet-only). The beets library DB lives next to the
+# music files at /var/data/media/library/music/soulbeet/.beets_library.db
+# (inside the existing media-data PVC, mounted into soulbeet via subPath).
+apiVersion: v1
+kind: PersistentVolume
+metadata: { name: soulbeet-data, namespace: media }
+spec:
+  capacity: { storage: 1Gi }
+  accessModes: [ReadWriteOnce]
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: soulbeet-data
+  hostPath: { path: /var/data/soulbeet/data/ }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: soulbeet-data, namespace: media }
+spec:
+  accessModes: [ReadWriteOnce]
+  resources: { requests: { storage: 1Gi } }
+  storageClassName: soulbeet-data
+  volumeName: soulbeet-data
