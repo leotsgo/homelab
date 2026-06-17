@@ -67,12 +67,14 @@ spec:
             - name: SLSKD_PASSWORD
               valueFrom: { secretKeyRef: { name: slskd-secrets, key: SLSKD_PASSWORD } }
             # Soulseek-network credentials (distinct from the slskd UI admin
-            # above). Auto-registers a new Soulseek account on first connect if
-            # the username is unused. SLSKD_<NESTED_KEY> env-override maps to
-            # the soulseek.username / soulseek.password config keys.
-            - name: SLSKD_SOULSEEK_USERNAME
+            # above). Auto-registers a new Soulseek account on first connect
+            # if the username is unused. slskd's env-override prefix for the
+            # soulseek section is SLSKD_SLSK_*  (NOT SLSKD_SOULSEEK_* — easy
+            # to get wrong; confirmed by the SLSKD_SLSK_LISTEN_PORT default
+            # the image ships with).
+            - name: SLSKD_SLSK_USERNAME
               valueFrom: { secretKeyRef: { name: slskd-secrets, key: SOULSEEK_USERNAME } }
-            - name: SLSKD_SOULSEEK_PASSWORD
+            - name: SLSKD_SLSK_PASSWORD
               valueFrom: { secretKeyRef: { name: slskd-secrets, key: SOULSEEK_PASSWORD } }
             - { name: SLSKD_HTTP_PORT, value: "5030" }
             - { name: TZ,   value: "America/Sao_Paulo" }
