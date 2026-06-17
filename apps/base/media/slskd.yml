@@ -66,6 +66,14 @@ spec:
               valueFrom: { secretKeyRef: { name: slskd-secrets, key: SLSKD_USERNAME } }
             - name: SLSKD_PASSWORD
               valueFrom: { secretKeyRef: { name: slskd-secrets, key: SLSKD_PASSWORD } }
+            # Soulseek-network credentials (distinct from the slskd UI admin
+            # above). Auto-registers a new Soulseek account on first connect if
+            # the username is unused. SLSKD_<NESTED_KEY> env-override maps to
+            # the soulseek.username / soulseek.password config keys.
+            - name: SLSKD_SOULSEEK_USERNAME
+              valueFrom: { secretKeyRef: { name: slskd-secrets, key: SOULSEEK_USERNAME } }
+            - name: SLSKD_SOULSEEK_PASSWORD
+              valueFrom: { secretKeyRef: { name: slskd-secrets, key: SOULSEEK_PASSWORD } }
             - { name: SLSKD_HTTP_PORT, value: "5030" }
             - { name: TZ,   value: "America/Sao_Paulo" }
             - { name: PUID, value: "1000" }
