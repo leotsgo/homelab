@@ -7,4 +7,8 @@ resources:
   - lidarr.yml
   - navidrome.yml
   - unflac.yml
+  - slskd.yml
+  - slskd-scripts.yml
+  - soulbeet.yml
+  - beets-config.yml
   - ingress.yml
