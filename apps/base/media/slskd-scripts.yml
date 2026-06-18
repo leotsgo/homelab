@@ -5,10 +5,14 @@ metadata:
   namespace: media
 data:
   # gluetun VPN_PORT_FORWARDING_UP_COMMAND target — fires each time Proton's PF
-  # port rotates. PATCHes slskd's `soulseek.listen_port` so incoming peer
+  # port rotates. PATCHes slskd's `soulseek.listenPort` so incoming peer
   # connections keep working across rotations. Retries until slskd's API is
   # reachable (handles cold-start race: gluetun comes up before slskd's HTTP
   # server is ready).
+  #
+  # Field name is camelCase (`listenPort`) — the snake_case form silently
+  # no-ops: PATCH returns 200 but the option is ignored. Confirmed via
+  # GET /api/v0/options which shows the soulseek section as camelCase.
   slskd-pf-up.sh: |
     #!/bin/sh
     PORT="$(cat /tmp/gluetun/forwarded_port 2>/dev/null)"
@@ -19,10 +23,10 @@ data:
     while [ "$i" -lt 12 ]; do
       if wget -q --header="X-API-Key: $API_KEY" \
            --header='Content-Type: application/json' \
-           --post-data="{\"soulseek\":{\"listen_port\":$PORT}}" \
+           --body-data="{\"soulseek\":{\"listenPort\":$PORT}}" \
            --method=PATCH \
            http://127.0.0.1:5030/api/v0/options -O- >/dev/null 2>&1; then
-        echo "pf-up: set slskd listen_port=$PORT"; exit 0
+        echo "pf-up: set slskd listenPort=$PORT"; exit 0
       fi
       i=$((i+1)); sleep 5
     done
