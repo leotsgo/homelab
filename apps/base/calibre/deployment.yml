@@ -27,6 +27,12 @@ spec:
               value: "America/Sao_Paulo"
             - name: DOCKER_MODS
               value: "linuxserver/mods:universal-calibre"
+            # Persist the cover-thumbnail cache on the config PVC. The default
+            # (/app/calibre-web/cps/cache) is inside the ephemeral container
+            # filesystem, so every restart wiped the cache and OPDS/cover
+            # browsing fell back to slow on-the-fly rendering.
+            - name: CACHE_DIR
+              value: "/config/cache"
           resources:
             requests:
               memory: "512Mi"
