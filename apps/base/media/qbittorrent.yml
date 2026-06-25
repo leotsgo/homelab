@@ -40,7 +40,7 @@ spec:
               echo "cleared any stale gluetun routing rules from prior netns lifetime"
       containers:
         - name: gluetun
-          image: qmcgaw/gluetun:v3.40.0
+          image: qmcgaw/gluetun:v3.41.1
           securityContext:
             capabilities: { add: ["NET_ADMIN"] }
           env:
