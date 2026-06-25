@@ -29,11 +29,11 @@ spec:
               value: "linuxserver/mods:universal-calibre"
           resources:
             requests:
-              memory: "192Mi"
-              cpu: "10m"
-            limits:
               memory: "512Mi"
-              cpu: "500m"
+              cpu: "100m"
+            limits:
+              memory: "1Gi"
+              cpu: "2000m"
           ports:
             - containerPort: 8083
           volumeMounts:
