@@ -27,7 +27,7 @@ spec:
       # before it starts. See https://github.com/qdm12/gluetun-wiki/blob/main/setup/advanced/kubernetes.md#adding-ipv6-rule--file-exists
       initContainers:
         - name: clear-stale-gluetun-rules
-          image: alpine:3.20
+          image: alpine:3.24
           securityContext:
             capabilities: { add: ["NET_ADMIN"] }
           command:
