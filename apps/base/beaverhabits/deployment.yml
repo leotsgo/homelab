@@ -22,7 +22,7 @@ spec:
         # created root:root 0755, so the app can't create habits.db. chown the
         # mount before startup. Declarative + self-healing across node rebuilds.
         - name: fix-perms
-          image: busybox:1.37
+          image: busybox:1.38
           command: ["sh", "-c", "chown -R 65534:65534 /app/.user"]
           securityContext:
             runAsUser: 0
