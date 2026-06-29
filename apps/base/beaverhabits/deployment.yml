@@ -37,6 +37,8 @@ spec:
               value: "America/Sao_Paulo"
             - name: HABITS_STORAGE
               value: "DATABASE"
+            - name: MAX_USER_COUNT
+              value: "1"
           resources:
             requests:
               memory: "128Mi"
