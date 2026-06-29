@@ -15,3 +15,4 @@ resources:
   - ../base/nextcloud
   - ../base/couchdb
   - ../base/media
+  - ../base/beaverhabits
