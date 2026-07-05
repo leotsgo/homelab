@@ -38,24 +38,24 @@ spec:
             - name: POSTGRES_DB
               value: "bookorbit"
             - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: bookorbit-db
-                  key: username
+              value: "bookorbit"
+            # All three come from the single Vaultwarden-synced Opaque secret
+            # `bookorbit-secrets` (ns bookorbit). POSTGRES_PASSWORD must match the
+            # role password set via `ALTER ROLE bookorbit PASSWORD` post-bootstrap.
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: bookorbit-db
-                  key: password
+                  name: bookorbit-secrets
+                  key: POSTGRES_PASSWORD
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: bookorbit-app
+                  name: bookorbit-secrets
                   key: JWT_SECRET
             - name: SETUP_BOOTSTRAP_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: bookorbit-app
+                  name: bookorbit-secrets
                   key: SETUP_BOOTSTRAP_TOKEN
           resources:
             requests:

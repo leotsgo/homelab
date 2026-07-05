@@ -22,15 +22,17 @@ spec:
 
   enableSuperuserAccess: true
 
-  # Fresh cluster (NOT a recovery). First tenant database is bookorbit; its owner
-  # credentials come from the Vaultwarden-synced `bookorbit-db` secret. Extensions
-  # are created in the application (bookorbit) database via postInitApplicationSQL.
+  # Fresh cluster (NOT a recovery). First tenant database is bookorbit. CNPG
+  # generates the owner's password (secret `homelab-app`); we do NOT wire the
+  # Vaultwarden secret in here because the syncer only makes Opaque secrets and
+  # initdb.secret requires type basic-auth. Instead, align the role password to
+  # the synced value once, post-bootstrap, with `ALTER ROLE bookorbit PASSWORD …`
+  # (same pattern as paperless — see the DR runbook). Extensions are created in
+  # the application (bookorbit) database via postInitApplicationSQL.
   bootstrap:
     initdb:
       database: bookorbit
       owner: bookorbit
-      secret:
-        name: bookorbit-db
       postInitApplicationSQL:
         - CREATE EXTENSION IF NOT EXISTS vector;
         - CREATE EXTENSION IF NOT EXISTS pg_trgm;
