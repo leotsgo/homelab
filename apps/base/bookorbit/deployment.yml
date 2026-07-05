@@ -17,10 +17,9 @@ spec:
     spec:
       containers:
         - name: bookorbit
-          # Pin to the current release tag (check
-          # https://github.com/bookorbit/bookorbit/pkgs/container/bookorbit),
-          # do not ship :latest.
-          image: ghcr.io/bookorbit/bookorbit:latest
+          # Pinned to the latest release (2026-07). Bump deliberately; the GHCR
+          # tag has no leading `v` even though the git release does (v2.1.0).
+          image: ghcr.io/bookorbit/bookorbit:2.1.0
           env:
             - name: PUID
               value: "1000"
