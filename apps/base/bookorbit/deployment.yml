@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookorbit
+  namespace: bookorbit
+  labels:
+    app: bookorbit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bookorbit
+  template:
+    metadata:
+      labels:
+        app: bookorbit
+    spec:
+      containers:
+        - name: bookorbit
+          # Pin to the current release tag (check
+          # https://github.com/bookorbit/bookorbit/pkgs/container/bookorbit),
+          # do not ship :latest.
+          image: ghcr.io/bookorbit/bookorbit:latest
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: "America/Sao_Paulo"
+            - name: PORT
+              value: "3000"
+            - name: APP_URL
+              value: "https://books.leotsgo.dev"
+            - name: POSTGRES_HOST
+              value: "homelab-rw.databases.svc.cluster.local"
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_DB
+              value: "bookorbit"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: bookorbit-db
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: bookorbit-db
+                  key: password
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: bookorbit-app
+                  key: JWT_SECRET
+            - name: SETUP_BOOTSTRAP_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: bookorbit-app
+                  key: SETUP_BOOTSTRAP_TOKEN
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "1Gi"
+              cpu: "2000m"
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: books
+              mountPath: /books
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: books
+          persistentVolumeClaim:
+            claimName: bookorbit-library
+        - name: data
+          persistentVolumeClaim:
+            claimName: bookorbit-data
