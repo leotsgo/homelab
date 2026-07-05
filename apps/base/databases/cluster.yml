@@ -1,0 +1,54 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: homelab
+  namespace: databases
+spec:
+  instances: 1
+  # Custom image from images/cnpg-pgvector — carries pgvector. Pin by digest if
+  # you captured one at push time.
+  imageName: ghcr.io/leotsgo/cnpg-pgvector:18
+
+  storage:
+    size: 5Gi
+
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 50m
+    limits:
+      memory: 1Gi
+      cpu: 1000m
+
+  enableSuperuserAccess: true
+
+  # Fresh cluster (NOT a recovery). First tenant database is bookorbit; its owner
+  # credentials come from the Vaultwarden-synced `bookorbit-db` secret. Extensions
+  # are created in the application (bookorbit) database via postInitApplicationSQL.
+  bootstrap:
+    initdb:
+      database: bookorbit
+      owner: bookorbit
+      secret:
+        name: bookorbit-db
+      postInitApplicationSQL:
+        - CREATE EXTENSION IF NOT EXISTS vector;
+        - CREATE EXTENSION IF NOT EXISTS pg_trgm;
+        - CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+  backup:
+    barmanObjectStore:
+      destinationPath: s3://leotsgo-data/homelab-db
+      endpointURL: https://s3.us-east-005.backblazeb2.com
+      s3Credentials:
+        accessKeyId:
+          name: b2
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: b2
+          key: ACCESS_SECRET_KEY
+      wal:
+        compression: gzip
+      data:
+        compression: gzip
+    retentionPolicy: "14d"
