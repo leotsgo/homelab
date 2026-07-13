@@ -80,6 +80,10 @@ spec:
             - { name: TZ,   value: "America/Sao_Paulo" }
             - { name: PUID, value: "1000" }
             - { name: PGID, value: "1000" }
+            # Workstation GC: slskd (.NET) idles at ~472Mi, 92% of its 512Mi limit.
+            # Default server GC hoards memory; gcServer=0 releases to the OS and
+            # pulls it well off the limit (avoids OOM risk without raising it).
+            - { name: DOTNET_gcServer, value: "0" }
           volumeMounts:
             - { name: config,    mountPath: /app }
             - { name: downloads, mountPath: /downloads }

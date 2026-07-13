@@ -68,6 +68,15 @@ spec:
               value: "por+eng"
             - name: PAPERLESS_PORT
               value: "8000"
+            # Personal instance: pin worker counts low. Defaults derive from CPU
+            # cores and spawn several gunicorn web + celery task workers, which is
+            # the bulk of paperless's ~700Mi. OCR still works, just less parallel.
+            - name: PAPERLESS_WEBSERVER_WORKERS
+              value: "1"
+            - name: PAPERLESS_TASK_WORKERS
+              value: "1"
+            - name: PAPERLESS_THREADS_PER_WORKER
+              value: "1"
           volumeMounts:
             - name: paperless-data
               mountPath: /usr/src/paperless/data

@@ -18,6 +18,9 @@ spec:
             - { name: PUID, value: "1000" }
             - { name: PGID, value: "1000" }
             - { name: TZ, value: "America/Sao_Paulo" }
+            # Workstation GC: default .NET server GC hoards memory (a heap per core)
+            # and rarely releases to the OS. gcServer=0 cuts idle footprint 30-50%.
+            - { name: DOTNET_gcServer, value: "0" }
             # Route indexer traffic through gluetun's HTTP proxy (Proton exit) so
             # geo-blocked indexers (RuTracker) work. NO_PROXY keeps cluster-internal
             # traffic (Prowlarr<->Lidarr sync) direct.
