@@ -17,3 +17,4 @@ resources:
   - ../base/couchdb
   - ../base/media
   - ../base/beaverhabits
+  - ../base/yaft

@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: yaft
+  namespace: yaft
+  annotations:
+    traefik.ingress.kubernetes.io/headers: |
+      browserXssFilter: true
+      contentTypeNosniff: true
+      forceSTSHeader: true
+      stsIncludeSubdomains: true
+      stsPreload: true
+      stsSeconds: 31536000
+      customFrameOptionsValue: "DENY"
+      # SPA (Svelte + Tailwind + ApexCharts): scripts are bundled (self); inline
+      # styles and data-URI images/fonts are needed by the UI and charts.
+      contentSecurityPolicy: "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+      referrerPolicy: "strict-origin-when-cross-origin"
+      permissionsPolicy: "camera=(), microphone=(), geolocation=()"
+spec:
+  rules:
+    - host: "yaft.leotsgo.dev"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: yaft
+                port:
+                  number: 8080
+  tls:
+    - hosts:
+        - "yaft.leotsgo.dev"
