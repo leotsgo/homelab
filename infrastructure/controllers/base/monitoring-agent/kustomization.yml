@@ -8,4 +8,6 @@ kind: Kustomization
 # Design: docs/superpowers/specs/... (homelab-network repo)
 resources:
   - namespace.yml
-  # repository.yml + release.yml added once the vaultwarden-sync Secret is verified.
+  - repository.yml
+  - rbac.yml
+  - release.yml
