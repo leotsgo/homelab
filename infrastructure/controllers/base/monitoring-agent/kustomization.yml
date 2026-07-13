@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# k3s collection agent for the observability stack (2026-07-13). Stateless: Grafana
+# Alloy DaemonSet scrapes cluster metrics + tails pod logs and remote-writes / pushes
+# to the data plane on zeus. kube-state-metrics + node-exporter provide the sources.
+# No PVCs — rebuild-from-git. Ingest creds come from the vaultwarden-sync Secret
+# `monitoring-ingest-auth` (Vaultwarden item tagged namespaces=monitoring).
+# Design: docs/superpowers/specs/... (homelab-network repo)
+resources:
+  - namespace.yml
+  # repository.yml + release.yml added once the vaultwarden-sync Secret is verified.

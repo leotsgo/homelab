@@ -12,3 +12,5 @@ resources:
   # Vaultwarden→k8s secret syncer (antoniolago/vaultwarden-kubernetes-secrets).
   # Items in Vaultwarden tagged `namespaces` become native k8s Secrets.
   - ../base/vaultwarden-sync
+  # Observability stack collection agent (Alloy + KSM + node-exporter) — 2026-07-13.
+  - ../base/monitoring-agent
