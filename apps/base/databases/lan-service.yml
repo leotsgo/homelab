@@ -1,0 +1,22 @@
+# LAN access to the homelab Postgres primary (so DBeaver etc. can connect without
+# `kubectl port-forward`). Separate from CNPG's managed `homelab-rw` service (which
+# CNPG owns/reconciles) — this one is ours. k3s ServiceLB (Klipper) binds it to the
+# node IP, so it's reachable at 192.168.50.10:5432 from the home network.
+# Selector targets the current PRIMARY (read-write).
+apiVersion: v1
+kind: Service
+metadata:
+  name: homelab-lan
+  namespace: databases
+  labels:
+    app: homelab-lan
+spec:
+  type: LoadBalancer
+  selector:
+    cnpg.io/cluster: homelab
+    cnpg.io/instanceRole: primary
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
+      protocol: TCP

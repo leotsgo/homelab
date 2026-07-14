@@ -7,3 +7,4 @@ resources:
   - namespace.yml
   - cluster.yml
   - backup.yml
+  - lan-service.yml
