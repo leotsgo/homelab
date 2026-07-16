@@ -25,7 +25,7 @@ spec:
         - name: yaft
           # App-code commit tag. The Go binary embeds the migrations (applied on
           # startup), the SPA, and the i18n catalogs. Bump deliberately.
-          image: ghcr.io/leotsgo/yaft:61f36de
+          image: ghcr.io/leotsgo/yaft:4f4530c
           env:
             # CRITICAL: the binary defaults YAFT_ENV=dev, which enables the
             # auth-bypass dev-caller. Production MUST be a non-dev value.
