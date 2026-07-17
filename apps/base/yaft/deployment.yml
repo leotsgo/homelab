@@ -19,7 +19,7 @@ spec:
         - name: ghcr-pull
       containers:
         - name: yaft
-          image: ghcr.io/leotsgo/yaft:3ce6912
+          image: ghcr.io/leotsgo/yaft:117f1b1
           env:
             - name: YAFT_ENV
               value: "production"
