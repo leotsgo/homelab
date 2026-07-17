@@ -4,17 +4,13 @@ metadata:
   name: beets-config
   namespace: media
 data:
-  # beets config for soulbeet (Soulseek-acquired music pipeline).
-  # Album-mode matching is intentionally permissive — Soulbeet's README
-  # recommends these thresholds since beets runs in quiet mode and would
-  # otherwise skip imports needing user intervention.
   config.yaml: |
     directory: /music/soulbeet
     library: /music/soulbeet/.beets_library.db
     import:
-      copy: yes               # copy from /downloads into the library; leave the raw file behind
-      write: yes              # write tags into the audio files
-      timid: no               # auto-accept confident matches
+      copy: yes
+      write: yes
+      timid: no
     match:
       strong_rec_thresh: 0.10
       distance_weights:

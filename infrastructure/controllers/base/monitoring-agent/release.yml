@@ -15,7 +15,6 @@ spec:
         name: prometheus-community
         namespace: monitoring
   values:
-    # Scraped by Alloy via the service DNS; no ServiceMonitor (no operator here).
     selfMonitor:
       enabled: false
 ---
@@ -35,8 +34,6 @@ spec:
         kind: HelmRepository
         name: prometheus-community
         namespace: monitoring
-  # Defaults are fine; Alloy discovers the endpoints by service name
-  # (__meta_kubernetes_service_name == prometheus-node-exporter).
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease

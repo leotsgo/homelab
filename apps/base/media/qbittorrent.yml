@@ -11,20 +11,9 @@ spec:
   template:
     metadata: { labels: { app: qbittorrent } }
     spec:
-      # ndots:1 so external tracker domains (e.g. bt2.t-ru.org) resolve as absolute
-      # first. k8s default ndots:5 makes libtorrent's async resolver exhaust the
-      # search-domain lookups and give up (Host not found) → 0 seeds/peers, even
-      # though nslookup/curl work.
       dnsConfig:
         options:
           - { name: ndots, value: "1" }
-      # gluetun-in-k8s gotcha: when the gluetun container restarts in place (kubelet
-      # restart, healthcheck-triggered VPN restart) the pod's netns is preserved, so
-      # the `ip -6 rule add ... table 51820` from the previous instance is still in
-      # the kernel. New gluetun bails with "adding ip rule 101: file exists" and
-      # backs off 4h, taking the HTTP proxy down with it (Prowlarr sees 503 from
-      # the proxy → "Unable to connect to indexer"). Clear stale gluetun ip rules
-      # before it starts. See https://github.com/qdm12/gluetun-wiki/blob/main/setup/advanced/kubernetes.md#adding-ipv6-rule--file-exists
       initContainers:
         - name: clear-stale-gluetun-rules
           image: alpine:3.20
@@ -50,13 +39,9 @@ spec:
               valueFrom: { secretKeyRef: { name: proton-wg, key: WIREGUARD_PRIVATE_KEY } }
             - name: WIREGUARD_ADDRESSES
               valueFrom: { secretKeyRef: { name: proton-wg, key: WIREGUARD_ADDRESSES } }
-            # Port-forwarding ON — Proton WG config now has NAT-PMP/PF enabled (P2P server).
-            # NOTE: do NOT re-add PORT_FORWARD_ONLY — it caused server-rotation flapping.
             - { name: VPN_PORT_FORWARDING, value: "on" }
             - { name: VPN_PORT_FORWARDING_PROVIDER, value: "protonvpn" }
-            # Auto-set qB's listen port to the forwarded port on every PF change.
             - { name: VPN_PORT_FORWARDING_UP_COMMAND, value: "/bin/sh /gluetun-scripts/pf-up.sh" }
-            # HTTP proxy (:8888) so other pods (Prowlarr) can egress through Proton.
             - { name: HTTPPROXY, value: "on" }
             - { name: FIREWALL_INPUT_PORTS, value: "8080,8888" }
             - { name: FIREWALL_OUTBOUND_SUBNETS, value: "10.42.0.0/16,10.43.0.0/16" }

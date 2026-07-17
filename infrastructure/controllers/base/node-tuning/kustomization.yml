@@ -1,10 +1,5 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-# Node OS tuning (2026-07-13). Privileged DaemonSet that raises
-# fs.inotify.max_user_instances (default 128, per-UID) which k3s exhausts on the
-# shared uid-0 budget — breaking file watchers in containerd/k3s and pods (first
-# seen: beaverhabits + bookorbit NiceGUI apps failing "too many open files").
-# Applies at runtime AND persists via /etc/sysctl.d; re-asserts on every reboot.
 resources:
   - namespace.yml
   - daemonset.yml

@@ -1,13 +1,5 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-# Hephaestus (the only cluster) — references base manifests directly. The former
-# `production` middle overlay was removed 2026-06-16; its bootstrap-recovery and
-# B2 backup config (previously applied as cluster-patches here) were rolled into
-# base. Apps not listed below have been deleted from base entirely.
-#
-# Original Phase-B add order (preserved for historical reference, see
-# ../../../homelab-network/runbooks/optiplex-migration.md):
-#   calibre -> wallabag -> paperless -> nextcloud -> couchdb -> media
 resources:
   - ../base/databases
   - ../base/bookorbit

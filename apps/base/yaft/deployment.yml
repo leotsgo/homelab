@@ -15,20 +15,12 @@ spec:
       labels:
         app: yaft
     spec:
-      # GHCR package is public (repo stays private). The pull secret is retained
-      # harmlessly for resilience — ignored for public pulls, still valid should
-      # the package ever go private again. Created out-of-band (kubectl), not
-      # committed, like the app secret below.
       imagePullSecrets:
         - name: ghcr-pull
       containers:
         - name: yaft
-          # App-code commit tag. The Go binary embeds the migrations (applied on
-          # startup), the SPA, and the i18n catalogs. Bump deliberately.
           image: ghcr.io/leotsgo/yaft:48500ab
           env:
-            # CRITICAL: the binary defaults YAFT_ENV=dev, which enables the
-            # auth-bypass dev-caller. Production MUST be a non-dev value.
             - name: YAFT_ENV
               value: "production"
             - name: TZ
@@ -37,17 +29,10 @@ spec:
               value: ":8080"
             - name: YAFT_PUBLIC_URL
               value: "https://yaft.leotsgo.dev"
-            # Served over HTTPS (Traefik wildcard), so keep Secure cookies on.
             - name: YAFT_AUTH_SECURE_COOKIES
               value: "true"
-            # Bootstrap password path: on boot, if this user has no password yet
-            # it gets BOOTSTRAP_PASSWORD (idempotent via EnsurePassword — a no-op
-            # once set). MUST match an existing user's email or startup fails, so
-            # it tracks the migrated account (renamed from leonardodiber@gmail.com
-            # to me@leotsgo.dev on 2026-07-13).
             - name: YAFT_BOOTSTRAP_EMAIL
               value: "me@leotsgo.dev"
-            # Secrets from the out-of-band Opaque `yaft-secrets` (ns yaft).
             - name: YAFT_DB_URL
               valueFrom:
                 secretKeyRef:
@@ -58,7 +43,6 @@ spec:
                 secretKeyRef:
                   name: yaft-secrets
                   key: JWT_SECRET
-            # Encrypts TOTP secrets at rest; required (base64 of 32 bytes) in prod.
             - name: YAFT_TOTP_ENCRYPTION_KEY
               valueFrom:
                 secretKeyRef:
@@ -78,7 +62,6 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 15
           readinessProbe:
-            # /health pings the database, so readiness tracks DB connectivity.
             httpGet:
               path: /health
               port: 8080

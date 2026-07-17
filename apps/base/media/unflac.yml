@@ -12,23 +12,11 @@ data:
     OUT=/data/import/music
     mkdir -p "$OUT"
     if [ ! -x "$BIN" ]; then echo "unflac missing (initContainer build failed?)"; exit 1; fi
-    # unflac takes the .cue as positional INPUT; it auto-detects cue encoding and finds
-    # the audio file in the cue's dir, writing <Artist>/<Album>/<tracks> under -o.
     find "$SRC" -name '*.cue' | while read -r cue; do
       dir=$(dirname "$cue")
-      # Skip if already processed — success OR failure. Failed torrents have
-      # data problems (malformed cue / missing audio) we can't fix here; without
-      # this gate the cronjob retries them forever and spams logs every 5 min.
-      # To retry one after fixing the source: rm "$dir/.unflac-failed".
       [ -f "$dir/.unflac-done" ] && continue
       [ -f "$dir/.unflac-failed" ] && continue
       echo "splitting: $cue"
-      # unflac's parser only handles a minimal cue grammar (FILE / TRACK / TITLE /
-      # PERFORMER / INDEX). EAC-style rips often emit extra commands that confuse
-      # it: REM (apostrophes break parsing), SONGWRITER, ISRC, CATALOG, PREGAP,
-      # POSTGAP, FLAGS, CDTEXTFILE — all are pure metadata, none affect splitting.
-      # Strip them into a tmpdir copy, symlink the audio files in so FILE refs
-      # still resolve.
       tmp=$(mktemp -d)
       for f in "$dir"/*; do ln -s "$f" "$tmp/$(basename "$f")"; done
       cue_name=$(basename "$cue")
@@ -62,7 +50,7 @@ spec:
           initContainers:
             - name: build-unflac
               image: golang:1.24-alpine
-              securityContext: { runAsUser: 0 }   # apk + go build need root; binary lands in /data/bin (exec'd by uid 1000)
+              securityContext: { runAsUser: 0 }
               command:
                 - /bin/sh
                 - -c

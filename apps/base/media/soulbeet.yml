@@ -28,11 +28,6 @@ spec:
           volumeMounts:
             - { name: data,         mountPath: /data }
             - { name: downloads,    mountPath: /downloads }
-            # Library output goes inside the existing media-data PVC so Navidrome
-            # serves it automatically (Navidrome already mounts subPath
-            # library/music read-only at /music). soulbeet writes to its own
-            # subPath (library/music/soulbeet) — no cross-contamination with
-            # Lidarr's siblings under library/music/.
             - { name: media-data,   mountPath: /music/soulbeet, subPath: library/music/soulbeet }
             - { name: beets-config, mountPath: /config/config.yaml, subPath: config.yaml }
           resources:

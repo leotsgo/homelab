@@ -1,19 +1,8 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-# Hephaestus (the only cluster) — references base controllers directly.
-# The former `production` middle overlay was removed 2026-06-16; cert-manager's
-# version pin (1.13.3) was rolled into base, and cnpg's "patch" was a no-op
-# (same version as base). image-automation was deleted (production cluster is
-# gone and hephaestus deliberately doesn't run it — two clusters pushing
-# image-update commits to the same git branch would race).
 resources:
   - ../base/cert-manager
   - ../base/cloudnative-pg
-  # Vaultwarden→k8s secret syncer (antoniolago/vaultwarden-kubernetes-secrets).
-  # Items in Vaultwarden tagged `namespaces` become native k8s Secrets.
   - ../base/vaultwarden-sync
-  # Observability stack collection agent (Alloy + KSM + node-exporter) — 2026-07-13.
   - ../base/monitoring-agent
-  # Node OS tuning: raises fs.inotify.max_user_instances (k3s exhausts the default
-  # 128 on the shared uid-0 budget, breaking pod file watchers) — 2026-07-13.
   - ../base/node-tuning

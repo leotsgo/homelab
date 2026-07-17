@@ -1,4 +1,3 @@
-# --- shared media library/downloads (hardlink-capable: one volume for qB+unflac+Lidarr) ---
 apiVersion: v1
 kind: PersistentVolume
 metadata: { name: media-data, namespace: media }
@@ -94,7 +93,6 @@ spec:
   storageClassName: navidrome
   volumeName: navidrome-data
 ---
-# slskd config + sqlite (slskd-only).
 apiVersion: v1
 kind: PersistentVolume
 metadata: { name: slskd-config, namespace: media }
@@ -114,8 +112,6 @@ spec:
   storageClassName: slskd-config
   volumeName: slskd-config
 ---
-# slskd raw downloads — shared between slskd (writes) and soulbeet (reads, then
-# beets imports → /music/soulbeet which lives inside media-data via subPath).
 apiVersion: v1
 kind: PersistentVolume
 metadata: { name: slskd-downloads, namespace: media }
@@ -135,9 +131,6 @@ spec:
   storageClassName: slskd-downloads
   volumeName: slskd-downloads
 ---
-# soulbeet sqlite db (soulbeet-only). The beets library DB lives next to the
-# music files at /var/data/media/library/music/soulbeet/.beets_library.db
-# (inside the existing media-data PVC, mounted into soulbeet via subPath).
 apiVersion: v1
 kind: PersistentVolume
 metadata: { name: soulbeet-data, namespace: media }

@@ -18,9 +18,6 @@ spec:
             - { name: PUID, value: "1000" }
             - { name: PGID, value: "1000" }
             - { name: TZ, value: "America/Sao_Paulo" }
-            # Workstation GC: default .NET server GC hoards memory (a heap per core)
-            # and rarely releases to the OS. gcServer=0 cuts idle footprint 30-50%
-            # for these low-traffic *arr apps.
             - { name: DOTNET_gcServer, value: "0" }
           ports: [ { containerPort: 8686 } ]
           volumeMounts:

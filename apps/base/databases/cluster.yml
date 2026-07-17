@@ -5,8 +5,6 @@ metadata:
   namespace: databases
 spec:
   instances: 1
-  # Custom image from images/cnpg-pgvector — carries pgvector. Pin by digest if
-  # you captured one at push time.
   imageName: ghcr.io/leotsgo/cnpg-pgvector:18
 
   storage:
@@ -22,13 +20,6 @@ spec:
 
   enableSuperuserAccess: true
 
-  # Fresh cluster (NOT a recovery). First tenant database is bookorbit. CNPG
-  # generates the owner's password (secret `homelab-app`); we do NOT wire the
-  # Vaultwarden secret in here because the syncer only makes Opaque secrets and
-  # initdb.secret requires type basic-auth. Instead, align the role password to
-  # the synced value once, post-bootstrap, with `ALTER ROLE bookorbit PASSWORD …`
-  # (same pattern as paperless — see the DR runbook). Extensions are created in
-  # the application (bookorbit) database via postInitApplicationSQL.
   bootstrap:
     initdb:
       database: bookorbit

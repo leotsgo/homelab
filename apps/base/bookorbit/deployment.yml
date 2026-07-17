@@ -17,8 +17,6 @@ spec:
     spec:
       containers:
         - name: bookorbit
-          # Pinned to the latest release (2026-07). Bump deliberately; the GHCR
-          # tag has no leading `v` even though the git release does (v2.1.0).
           image: ghcr.io/bookorbit/bookorbit:2.1.0
           env:
             - name: PUID
@@ -39,9 +37,6 @@ spec:
               value: "bookorbit"
             - name: POSTGRES_USER
               value: "bookorbit"
-            # All three come from the single Vaultwarden-synced Opaque secret
-            # `bookorbit-secrets` (ns bookorbit). POSTGRES_PASSWORD must match the
-            # role password set via `ALTER ROLE bookorbit PASSWORD` post-bootstrap.
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:

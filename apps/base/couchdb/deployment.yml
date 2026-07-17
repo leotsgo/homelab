@@ -8,7 +8,7 @@ metadata:
 spec:
   replicas: 1
   strategy:
-    type: Recreate          # single hostPath RWO volume — never two pods at once
+    type: Recreate
   selector:
     matchLabels:
       app: couchdb
@@ -18,12 +18,12 @@ spec:
         app: couchdb
     spec:
       securityContext:
-        runAsUser: 5984       # official couchdb image user; hostPath dir must be chown 5984:5984
+        runAsUser: 5984
         runAsGroup: 5984
         fsGroup: 5984
       containers:
         - name: couchdb
-          image: couchdb:3.4.2   # verify/bump: hub.docker.com/_/couchdb
+          image: couchdb:3.4.2
           env:
             - name: COUCHDB_USER
               valueFrom:

@@ -17,9 +17,6 @@ spec:
   install:
     createNamespace: false
   values:
-    # The syncer's own Vaultwarden creds (BW_CLIENTID / BW_CLIENTSECRET /
-    # VAULTWARDEN__MASTERPASSWORD) come from the hand-applied secret
-    # `vaultwarden-kubernetes-secrets` in this namespace (the one bootstrap secret).
     env:
       config:
         VAULTWARDEN__SERVERURL: "https://vault.leotsgo.dev"

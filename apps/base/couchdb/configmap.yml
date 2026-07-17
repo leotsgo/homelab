@@ -4,12 +4,6 @@ metadata:
   name: couchdb-config
   namespace: couchdb
 data:
-  # Mounted read-only into /opt/couchdb/etc/local.d/ (admin creds come from the
-  # syncer secret via env). Tuned for Obsidian LiveSync:
-  #  - single_node: auto-creates _users/_replicator/_global_changes on first boot
-  #  - require_valid_user(_except_for_up): lock the DB, but keep /_up open for probes
-  #  - max sizes: LiveSync ships large chunked requests/documents
-  #  - cors: REQUIRED for the Obsidian desktop/mobile app origins
   10-livesync.ini: |
     [couchdb]
     single_node = true

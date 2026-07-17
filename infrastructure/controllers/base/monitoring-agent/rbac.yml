@@ -1,6 +1,3 @@
-# Supplementary cluster-read RBAC for the Alloy ServiceAccount (release name "alloy" in
-# the monitoring namespace). Grants what Alloy needs beyond the chart default: node proxy
-# (kubelet + cadvisor scrape via the API server) and pod logs (loki.source.kubernetes).
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:

@@ -15,10 +15,6 @@ spec:
 
   enableSuperuserAccess: true
 
-  # Cluster was bootstrapped via recovery from the Backblaze B2 backup
-  # (was a one-time migration from the VPS production cluster on 2026-06).
-  # Subsequent Flux applies are no-ops on bootstrap (cluster already exists);
-  # rebuilds-from-scratch will re-do the recovery from the same B2 path.
   bootstrap:
     recovery:
       source: wallabag-cluster

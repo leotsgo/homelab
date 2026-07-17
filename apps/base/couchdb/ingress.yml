@@ -4,9 +4,6 @@ metadata:
   name: couchdb
   namespace: couchdb
   annotations:
-    # NOTE: contentSecurityPolicy below only affects the in-browser Fauxton UI
-    # (/_utils). Obsidian LiveSync talks to the API via fetch and is unaffected;
-    # CouchDB's own [cors] config (configmap) is what allows the app origins.
     traefik.ingress.kubernetes.io/headers: |
       browserXssFilter: true
       contentTypeNosniff: true

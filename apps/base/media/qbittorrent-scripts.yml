@@ -4,10 +4,6 @@ metadata:
   name: qbittorrent-scripts
   namespace: media
 data:
-  # linuxserver custom-cont-init.d — runs as root BEFORE qB starts. Bypass WebUI
-  # auth for localhost so gluetun's PF up-command can set the listen port via the
-  # local qB API without credentials. Idempotent; applies on next container start
-  # (the conf must already exist — it does after first run).
   10-localhostauth.sh: |
     #!/bin/sh
     CONF=/config/qBittorrent/qBittorrent.conf
@@ -17,9 +13,6 @@ data:
     else
       sed -i '/^\[Preferences\]/a WebUI\\LocalHostAuth=false' "$CONF"
     fi
-  # gluetun VPN_PORT_FORWARDING_UP_COMMAND target — runs in the gluetun container
-  # whenever the Proton forwarded port changes. Sets qB's listen port via the local
-  # API (no auth, LocalHostAuth bypassed). Retries until qB's WebUI is reachable.
   pf-up.sh: |
     #!/bin/sh
     PORT="$(cat /tmp/gluetun/forwarded_port 2>/dev/null)"

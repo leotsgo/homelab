@@ -16,17 +16,9 @@ spec:
         app.kubernetes.io/name: sysctl-inotify
         app.kubernetes.io/part-of: node-tuning
     spec:
-      # Node-critical: it fixes a limit that, when hit, breaks file watchers in
-      # containerd/k3s and pods (see the container comment). Run everywhere,
-      # tolerate every taint so a future/tainted node still gets tuned.
       priorityClassName: system-node-critical
       tolerations:
         - operator: Exists
-      # Sets the runtime value via /proc/sys directly: fs.inotify.max_user_* is
-      # NOT namespaced, so a privileged container's write propagates to the host
-      # (no nsenter needed). The hostPath drop-in makes it survive reboots
-      # (systemd-sysctl applies /etc/sysctl.d/*.conf), and this pod re-runs on
-      # every node (re)boot to re-assert it. Idempotent.
       containers:
         - name: sysctl
           image: busybox:1.36
@@ -37,17 +29,12 @@ spec:
             - |
               set -eu
               cat > /host-sysctl.d/99-k3s-inotify.conf <<EOF
-              # Managed by Flux: infrastructure/controllers/base/node-tuning.
-              # Default max_user_instances (128) is per-UID; k3s runs many root
-              # containers that share uid 0's budget and exhaust it, breaking
-              # inotify_init() ("too many open files"). Raise it with headroom.
               fs.inotify.max_user_instances = 1024
               fs.inotify.max_user_watches = 524288
               EOF
               echo 1024   > /proc/sys/fs/inotify/max_user_instances
               echo 524288 > /proc/sys/fs/inotify/max_user_watches
               echo "applied: instances=$(cat /proc/sys/fs/inotify/max_user_instances) watches=$(cat /proc/sys/fs/inotify/max_user_watches)"
-              # DaemonSet pods must stay Running; the tuning is already applied.
               exec sleep infinity
           resources:
             requests:

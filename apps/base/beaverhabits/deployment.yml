@@ -18,9 +18,6 @@ spec:
         app: beaverhabits
     spec:
       initContainers:
-        # The image runs as uid 65534 (nobody), but the hostPath mount is
-        # created root:root 0755, so the app can't create habits.db. chown the
-        # mount before startup. Declarative + self-healing across node rebuilds.
         - name: fix-perms
           image: busybox:1.37
           command: ["sh", "-c", "chown -R 65534:65534 /app/.user"]

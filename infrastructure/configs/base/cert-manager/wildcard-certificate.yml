@@ -2,16 +2,11 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: wildcard-leotsgo-dev
-  # Lives next to Traefik (k3s bundled) so the TLSStore can reference the Secret.
   namespace: kube-system
 spec:
   secretName: wildcard-leotsgo-dev-tls
   issuerRef:
     name: letsencrypt-production
     kind: ClusterIssuer
-  # Wildcard keeps individual service hostnames out of Certificate Transparency logs.
-  # Wildcard ONLY (no apex): apex + wildcard need a TXT at the same
-  # _acme-challenge name, which serializes the challenges and trips a
-  # cert-manager/Cloudflare cleanup race. No service lives at the bare apex.
   dnsNames:
     - "*.leotsgo.dev"

@@ -11,13 +11,6 @@ spec:
   template:
     metadata: { labels: { app: slskd } }
     spec:
-      # gluetun-in-k8s gotcha (same one that bit qbittorrent — commit ce4902c):
-      # when gluetun restarts in place (kubelet, internal healthcheck-triggered
-      # VPN restart) the pod netns is preserved, so a stale
-      # `ip rule add ... table 51820` from the previous gluetun instance blocks
-      # the new one and gluetun back-offs for 4h16m. Init container deletes it
-      # before gluetun starts.
-      # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/advanced/kubernetes.md
       initContainers:
         - name: clear-stale-gluetun-rules
           image: alpine:3.20
@@ -60,18 +53,10 @@ spec:
           image: slskd/slskd:latest
           env:
             - { name: SLSKD_REMOTE_CONFIGURATION, value: "true" }
-            # SLSKD_USERNAME/PASSWORD set the web UI admin via slskd's
-            # SLSKD_<UPPERCASE_KEY> env-override convention.
             - name: SLSKD_USERNAME
               valueFrom: { secretKeyRef: { name: slskd-secrets, key: SLSKD_USERNAME } }
             - name: SLSKD_PASSWORD
               valueFrom: { secretKeyRef: { name: slskd-secrets, key: SLSKD_PASSWORD } }
-            # Soulseek-network credentials (distinct from the slskd UI admin
-            # above). Auto-registers a new Soulseek account on first connect
-            # if the username is unused. slskd's env-override prefix for the
-            # soulseek section is SLSKD_SLSK_*  (NOT SLSKD_SOULSEEK_* — easy
-            # to get wrong; confirmed by the SLSKD_SLSK_LISTEN_PORT default
-            # the image ships with).
             - name: SLSKD_SLSK_USERNAME
               valueFrom: { secretKeyRef: { name: slskd-secrets, key: SOULSEEK_USERNAME } }
             - name: SLSKD_SLSK_PASSWORD
@@ -80,9 +65,6 @@ spec:
             - { name: TZ,   value: "America/Sao_Paulo" }
             - { name: PUID, value: "1000" }
             - { name: PGID, value: "1000" }
-            # Workstation GC: slskd (.NET) idles at ~472Mi, 92% of its 512Mi limit.
-            # Default server GC hoards memory; gcServer=0 releases to the OS and
-            # pulls it well off the limit (avoids OOM risk without raising it).
             - { name: DOTNET_gcServer, value: "0" }
           volumeMounts:
             - { name: config,    mountPath: /app }
