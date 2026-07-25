@@ -1,7 +1,11 @@
-# Shared Gateway for all homelab apps. class=traefik (k3s bundled Traefik, Gateway
-# API v1.4). Single HTTP listener on the `web` entrypoint (port 8000) — TLS is
-# terminated upstream at zeus/caddy, so Traefik only sees HTTP. allowedRoutes.from:
-# All lets each app own an HTTPRoute in its own namespace pointing here.
+# Shared Gateway for all homelab apps (class=traefik, Gateway API v1.4).
+#  - web (HTTP, :8000 = the web entrypoint)
+#  - websecure (HTTPS, :8443 = the websecure entrypoint) terminating with the
+#    cert-manager *.leotsgo.dev wildcard cert (same one Traefik's TLSStore uses).
+# External traffic arrives on websecure (443) — Cloudflare/DNS -> Traefik:443 — so
+# the HTTPS listener is what actually serves the apps; web is kept for HTTP.
+# HTTPRoutes (no sectionName) attach to both listeners. The wildcard secret lives
+# in kube-system, so a ReferenceGrant there authorizes this cross-namespace certRef.
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
@@ -13,6 +17,19 @@ spec:
     - name: web
       port: 8000
       protocol: HTTP
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: websecure
+      port: 8443
+      protocol: HTTPS
+      hostname: "*.leotsgo.dev"
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: wildcard-leotsgo-dev-tls
+            namespace: kube-system
       allowedRoutes:
         namespaces:
           from: All

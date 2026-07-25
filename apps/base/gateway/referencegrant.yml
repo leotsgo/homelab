@@ -1,0 +1,16 @@
+# Allow the Gateway in the `gateway` namespace to use the wildcard TLS secret that
+# cert-manager maintains in kube-system.
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: gateway-to-wildcard-cert
+  namespace: kube-system
+spec:
+  from:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      namespace: gateway
+  to:
+    - group: ""
+      kind: Secret
+      name: wildcard-leotsgo-dev-tls

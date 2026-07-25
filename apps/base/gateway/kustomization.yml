@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - namespace.yml
   - gateway.yml
+  - referencegrant.yml
