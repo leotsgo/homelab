@@ -82,3 +82,31 @@ spec:
         connectionLimit: -1
         passwordSecret:
           name: wallabag-container-env
+      # Migrated from the standalone nextcloud-cluster. App + role share the
+      # Vaultwarden-synced nextcloud-db-secret (basic-auth), synced into both
+      # nextcloud ns (app) and databases ns (this role).
+      - name: nextcloud
+        ensure: present
+        login: true
+        superuser: false
+        createdb: false
+        createrole: false
+        inherit: true
+        replication: false
+        bypassrls: false
+        connectionLimit: -1
+        passwordSecret:
+          name: nextcloud-db-secret
+      # Migrated from the standalone paperless-cluster. Same shared-secret model.
+      - name: paperless
+        ensure: present
+        login: true
+        superuser: false
+        createdb: false
+        createrole: false
+        inherit: true
+        replication: false
+        bypassrls: false
+        connectionLimit: -1
+        passwordSecret:
+          name: paperless-db-secret
