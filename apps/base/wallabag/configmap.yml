@@ -6,7 +6,9 @@ metadata:
 data:
   POSTGRES_USER: postgres
   SYMFONY__ENV__DATABASE_DRIVER: pdo_pgsql
-  SYMFONY__ENV__DATABASE_HOST: wallabag-cluster-rw.wallabag.svc.cluster.local
+  # Migrated onto the shared homelab CNPG cluster (databases ns). Old standalone
+  # wallabag-cluster retained until this is verified, then decommissioned.
+  SYMFONY__ENV__DATABASE_HOST: homelab-rw.databases.svc.cluster.local
   SYMFONY__ENV__DATABASE_PORT: "5432"
   SYMFONY__ENV__DATABASE_NAME: wallabag
   SYMFONY__ENV__DATABASE_USER: wallabag
