@@ -1,0 +1,42 @@
+# Gateway API replacement for the bookorbit Ingress. The Middleware preserves the
+# exact security headers the Ingress set via traefik.ingress.kubernetes.io/headers;
+# the HTTPRoute attaches to the shared gateway/homelab Gateway and routes the host.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: bookorbit-security-headers
+  namespace: bookorbit
+spec:
+  headers:
+    browserXssFilter: true
+    contentTypeNosniff: true
+    forceSTSHeader: true
+    stsIncludeSubdomains: true
+    stsPreload: true
+    stsSeconds: 31536000
+    customFrameOptionsValue: "SAMEORIGIN"
+    contentSecurityPolicy: "default-src 'self'; script-src 'self'"
+    referrerPolicy: "strict-origin-when-cross-origin"
+    permissionsPolicy: "camera=(), microphone=(), geolocation=()"
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: bookorbit
+  namespace: bookorbit
+spec:
+  parentRefs:
+    - name: homelab
+      namespace: gateway
+  hostnames:
+    - books.leotsgo.dev
+  rules:
+    - filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: bookorbit-security-headers
+      backendRefs:
+        - name: bookorbit
+          port: 3000
