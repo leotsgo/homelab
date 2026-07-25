@@ -5,7 +5,10 @@ metadata:
   namespace: databases
 spec:
   instances: 1
-  imageName: ghcr.io/leotsgo/cnpg-pgvector:18
+  # Pinned to a GA minor (was :18 which floated on 18rc1). Bump deliberately for
+  # controlled minor upgrades. Rolling restart is on-disk compatible while catversion
+  # is unchanged (true across 18.x); a catversion change would need pg_upgrade.
+  imageName: ghcr.io/leotsgo/cnpg-pgvector:18.4
 
   storage:
     size: 5Gi

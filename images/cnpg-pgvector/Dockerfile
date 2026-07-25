@@ -1,4 +1,6 @@
-FROM ghcr.io/cloudnative-pg/postgresql:18-bookworm
+# Pinned to a GA release (the old `18-bookworm` tag froze at 18rc1 when CNPG moved
+# to flavor-suffixed tags). `standard-bookworm` is the drop-in of the old default.
+FROM ghcr.io/cloudnative-pg/postgresql:18.4-standard-bookworm
 
 USER root
 RUN apt-get update \
