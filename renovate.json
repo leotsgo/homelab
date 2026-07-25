@@ -1,25 +1,29 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
+    "config:recommended",
+    "docker:pinDigests"
+  ],
+  "enabledManagers": [
+    "flux",
+    "dockerfile",
+    "custom.regex"
   ],
   "flux": {
     "managerFilePatterns": [
-      "/(?:^|/)gotk-components\\.ya?ml$/"
+      "/\\.ya?ml$/"
     ]
   },
-  "enabledManagers": [
-    "flux",
-    "custom.regex"
-  ],
   "customManagers": [
     {
       "customType": "regex",
+      "description": "Container images in k8s manifests, incl. non-standard fields (e.g. CNPG spec.imageName)",
       "managerFilePatterns": [
-        "/^apps/base/.+\\.ya?ml$/"
+        "/^apps/.+\\.ya?ml$/",
+        "/^infrastructure/.+\\.ya?ml$/"
       ],
       "matchStrings": [
-        "image:\\s*\"?(?<depName>[\\w\\-/\\.]+)(?::(?<currentValue>[\\w\\.-]+))?\"?"
+        "(?:image|imageName):\\s*\"?(?<depName>[\\w\\-/\\.]+)(?::(?<currentValue>[\\w][\\w.-]*))?(?:@(?<currentDigest>sha256:[a-f0-9]+))?\"?"
       ],
       "datasourceTemplate": "docker"
     }
