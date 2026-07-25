@@ -66,3 +66,19 @@ spec:
         connectionLimit: -1
         passwordSecret:
           name: bookorbit-db-secret
+      # Migrated from the standalone wallabag-cluster into this shared cluster.
+      # App reads its password from wallabag-container-env key
+      # SYMFONY__ENV__DATABASE_PASSWORD (envFrom); the `password` key on the same
+      # Vaultwarden-synced secret is the copy CNPG enforces here.
+      - name: wallabag
+        ensure: present
+        login: true
+        superuser: false
+        createdb: false
+        createrole: false
+        inherit: true
+        replication: false
+        bypassrls: false
+        connectionLimit: -1
+        passwordSecret:
+          name: wallabag-container-env
