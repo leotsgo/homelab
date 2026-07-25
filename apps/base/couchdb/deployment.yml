@@ -23,7 +23,7 @@ spec:
         fsGroup: 5984
       containers:
         - name: couchdb
-          image: couchdb:3.4.2
+          image: couchdb:3.5.2
           env:
             - name: COUCHDB_USER
               valueFrom:
