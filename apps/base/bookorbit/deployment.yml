@@ -40,8 +40,11 @@ spec:
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: bookorbit-secrets
-                  key: POSTGRES_PASSWORD
+                  # Shared with the CNPG role: one Vaultwarden item syncs
+                  # bookorbit-db-secret into both this ns (app) and databases
+                  # (cluster managed.role). Rotate the password in one place.
+                  name: bookorbit-db-secret
+                  key: password
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:

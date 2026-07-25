@@ -45,3 +45,24 @@ spec:
       data:
         compression: gzip
     retentionPolicy: "14d"
+
+  # Enforce the bookorbit owner-role password against the Vaultwarden-synced
+  # secret databases/bookorbit-db-secret (key `password`). Without this, CNPG
+  # re-syncs the role password to its generated `homelab-app` secret on every
+  # full reconcile (e.g. operator restart), reverting any manual `ALTER ROLE`
+  # and crashlooping the app on its next pod roll. Attributes below mirror the
+  # live role exactly so declaring it here revokes nothing.
+  managed:
+    roles:
+      - name: bookorbit
+        ensure: present
+        login: true
+        superuser: false
+        createdb: false
+        createrole: false
+        inherit: true
+        replication: false
+        bypassrls: false
+        connectionLimit: -1
+        passwordSecret:
+          name: bookorbit-db-secret
