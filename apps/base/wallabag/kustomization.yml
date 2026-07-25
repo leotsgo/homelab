@@ -4,7 +4,5 @@ resources:
   - namespace.yml
   - configmap.yml
   - deployment.yml
-  - database.yml
-  - backup.yml
   - ingress.yml
   - service.yml
