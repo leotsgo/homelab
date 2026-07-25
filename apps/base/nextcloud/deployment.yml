@@ -36,8 +36,11 @@ spec:
               memory: 1Gi
               cpu: 500m
           env:
+            # Migrated to the shared homelab cluster. NOTE: nextcloud only reads
+            # this at initial install; the live value is dbhost in config.php on
+            # the data PVC (already repointed). Kept correct for reinstall/clarity.
             - name: POSTGRES_HOST
-              value: "nextcloud-cluster-rw.nextcloud.svc.cluster.local"
+              value: "homelab-rw.databases.svc.cluster.local"
             - name: POSTGRES_DB
               value: "nextcloud"
             - name: POSTGRES_USER
