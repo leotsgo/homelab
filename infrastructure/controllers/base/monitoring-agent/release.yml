@@ -129,6 +129,14 @@ spec:
             forward_to = [prometheus.remote_write.zeus.receiver]
           }
 
+          // -- version-checker (per-image is-latest / current-vs-latest upgrade status) --
+          prometheus.scrape "version_checker" {
+            targets = [
+              { "__address__" = "version-checker.monitoring.svc.cluster.local:8080", "job" = "version-checker" },
+            ]
+            forward_to = [prometheus.remote_write.zeus.receiver]
+          }
+
           // -- node-exporter (discover its endpoints by name) --
           discovery.relabel "node_exporter" {
             targets = discovery.kubernetes.endpoints.targets

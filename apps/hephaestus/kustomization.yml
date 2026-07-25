@@ -10,3 +10,4 @@ resources:
   - ../base/media
   - ../base/beaverhabits
   - ../base/yaft
+  - ../base/version-checker
