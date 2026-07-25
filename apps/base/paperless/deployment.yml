@@ -28,8 +28,9 @@ spec:
           env:
             - name: PAPERLESS_REDIS
               value: "redis://paperless-redis.paperless.svc.cluster.local:6379"
+            # Migrated to the shared homelab cluster (databases ns).
             - name: PAPERLESS_DBHOST
-              value: "paperless-cluster-rw.paperless.svc.cluster.local"
+              value: "homelab-rw.databases.svc.cluster.local"
             - name: PAPERLESS_DBPORT
               value: "5432"
             - name: PAPERLESS_DBNAME
