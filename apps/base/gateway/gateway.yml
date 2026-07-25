@@ -1,0 +1,18 @@
+# Shared Gateway for all homelab apps. class=traefik (k3s bundled Traefik, Gateway
+# API v1.4). Single HTTP listener on the `web` entrypoint (port 8000) — TLS is
+# terminated upstream at zeus/caddy, so Traefik only sees HTTP. allowedRoutes.from:
+# All lets each app own an HTTPRoute in its own namespace pointing here.
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: homelab
+  namespace: gateway
+spec:
+  gatewayClassName: traefik
+  listeners:
+    - name: web
+      port: 8000
+      protocol: HTTP
+      allowedRoutes:
+        namespaces:
+          from: All
