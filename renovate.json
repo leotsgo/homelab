@@ -9,7 +9,7 @@
     "dockerfile",
     "custom.regex"
   ],
-  "//limits": "config:recommended throttles to 2 PRs/hour, which parks cert-manager/cnpg/KSM in the dashboard's Rate-Limited list. Lift the throttle so every detected update actually opens a PR.",
+  "description": "prHourlyLimit 0 lifts config:recommended's 2 PRs/hour throttle that parked cert-manager/cnpg/KSM in the dashboard Rate-Limited list, so every detected in-cluster update opens a PR.",
   "prHourlyLimit": 0,
   "prConcurrentLimit": 25,
   "branchConcurrentLimit": 25,
