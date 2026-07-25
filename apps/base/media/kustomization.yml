@@ -11,4 +11,4 @@ resources:
   - slskd-scripts.yml
   - soulbeet.yml
   - beets-config.yml
-  - ingress.yml
+  - httproutes.yml

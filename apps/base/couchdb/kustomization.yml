@@ -2,6 +2,6 @@ resources:
   - namespace.yml
   - configmap.yml
   - volumes.yml
-  - ingress.yml
+  - httproute.yml
   - service.yml
   - deployment.yml

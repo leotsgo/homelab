@@ -1,0 +1,39 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: paperless-security-headers
+  namespace: paperless
+spec:
+  headers:
+    browserXssFilter: true
+    contentTypeNosniff: true
+    forceSTSHeader: true
+    stsIncludeSubdomains: true
+    stsPreload: true
+    stsSeconds: 31536000
+    customFrameOptionsValue: "SAMEORIGIN"
+    contentSecurityPolicy: "default-src 'self'; script-src 'self'"
+    referrerPolicy: "strict-origin-when-cross-origin"
+    permissionsPolicy: "camera=(), microphone=(), geolocation=()"
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: paperless
+  namespace: paperless
+spec:
+  parentRefs:
+    - name: homelab
+      namespace: gateway
+  hostnames:
+    - paperless.leotsgo.dev
+  rules:
+    - filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: paperless-security-headers
+      backendRefs:
+        - name: paperless
+          port: 8000

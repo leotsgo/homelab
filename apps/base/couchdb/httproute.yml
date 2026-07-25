@@ -1,0 +1,39 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: couchdb-security-headers
+  namespace: couchdb
+spec:
+  headers:
+    browserXssFilter: true
+    contentTypeNosniff: true
+    forceSTSHeader: true
+    stsIncludeSubdomains: true
+    stsPreload: true
+    stsSeconds: 31536000
+    customFrameOptionsValue: "SAMEORIGIN"
+    contentSecurityPolicy: "default-src 'self'; script-src 'self'"
+    referrerPolicy: "strict-origin-when-cross-origin"
+    permissionsPolicy: "camera=(), microphone=(), geolocation=()"
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: couchdb
+  namespace: couchdb
+spec:
+  parentRefs:
+    - name: homelab
+      namespace: gateway
+  hostnames:
+    - couchdb.leotsgo.dev
+  rules:
+    - filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: couchdb-security-headers
+      backendRefs:
+        - name: couchdb
+          port: 5984

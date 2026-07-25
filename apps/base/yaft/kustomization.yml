@@ -5,6 +5,6 @@ namespace: yaft
 
 resources:
   - namespace.yml
-  - ingress.yml
+  - httproute.yml
   - service.yml
   - deployment.yml

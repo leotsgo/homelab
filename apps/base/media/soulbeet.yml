@@ -52,15 +52,3 @@ spec:
   selector: { app: soulbeet }
   ports:
     - { name: webui, port: 9765, targetPort: 9765 }
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata: { name: soulbeet, namespace: media }
-spec:
-  rules:
-    - host: "soulbeet.leotsgo.dev"
-      http:
-        paths:
-          - { path: /, pathType: Prefix, backend: { service: { name: soulbeet, port: { number: 9765 } } } }
-  tls:
-    - hosts: [ "soulbeet.leotsgo.dev" ]

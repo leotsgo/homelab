@@ -1,0 +1,118 @@
+# Gateway API routes for all media apps (replaces the per-app Ingresses).
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: lidarr
+  namespace: media
+spec:
+  parentRefs:
+    - name: homelab
+      namespace: gateway
+  hostnames:
+    - lidarr.leotsgo.dev
+  rules:
+    - backendRefs:
+        - name: lidarr
+          port: 8686
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: navidrome-security-headers
+  namespace: media
+spec:
+  headers:
+    browserXssFilter: true
+    contentTypeNosniff: true
+    forceSTSHeader: true
+    stsIncludeSubdomains: true
+    stsPreload: true
+    stsSeconds: 31536000
+    customFrameOptionsValue: "SAMEORIGIN"
+    referrerPolicy: "strict-origin-when-cross-origin"
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: navidrome
+  namespace: media
+spec:
+  parentRefs:
+    - name: homelab
+      namespace: gateway
+  hostnames:
+    - navidrome.leotsgo.dev
+  rules:
+    - filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: navidrome-security-headers
+      backendRefs:
+        - name: navidrome
+          port: 4533
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: prowlarr
+  namespace: media
+spec:
+  parentRefs:
+    - name: homelab
+      namespace: gateway
+  hostnames:
+    - prowlarr.leotsgo.dev
+  rules:
+    - backendRefs:
+        - name: prowlarr
+          port: 9696
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: qbittorrent
+  namespace: media
+spec:
+  parentRefs:
+    - name: homelab
+      namespace: gateway
+  hostnames:
+    - qbittorrent.leotsgo.dev
+  rules:
+    - backendRefs:
+        - name: qbittorrent
+          port: 8080
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: slskd
+  namespace: media
+spec:
+  parentRefs:
+    - name: homelab
+      namespace: gateway
+  hostnames:
+    - slskd.leotsgo.dev
+  rules:
+    - backendRefs:
+        - name: slskd
+          port: 5030
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: soulbeet
+  namespace: media
+spec:
+  parentRefs:
+    - name: homelab
+      namespace: gateway
+  hostnames:
+    - soulbeet.leotsgo.dev
+  rules:
+    - backendRefs:
+        - name: soulbeet
+          port: 9765

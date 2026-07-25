@@ -95,15 +95,3 @@ spec:
   selector: { app: slskd }
   ports:
     - { name: webui, port: 5030, targetPort: 5030 }
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata: { name: slskd, namespace: media }
-spec:
-  rules:
-    - host: "slskd.leotsgo.dev"
-      http:
-        paths:
-          - { path: /, pathType: Prefix, backend: { service: { name: slskd, port: { number: 5030 } } } }
-  tls:
-    - hosts: [ "slskd.leotsgo.dev" ]
