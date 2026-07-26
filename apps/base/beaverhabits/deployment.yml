@@ -28,7 +28,7 @@ spec:
               mountPath: /app/.user
       containers:
         - name: beaverhabits
-          image: daya0576/beaverhabits:0.9.1
+          image: daya0576/beaverhabits:0.10.0
           env:
             - name: TZ
               value: "America/Sao_Paulo"
