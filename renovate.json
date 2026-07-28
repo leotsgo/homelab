@@ -1,8 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended",
-    "docker:pinDigests"
+    "config:recommended"
   ],
   "enabledManagers": [
     "flux",
@@ -30,6 +29,18 @@
         "(?:image|imageName):\\s*\"?(?<depName>[\\w\\-/\\.]+)(?::(?<currentValue>[\\w][\\w.-]*))?(?:@(?<currentDigest>sha256:[a-f0-9]+))?\"?"
       ],
       "datasourceTemplate": "docker"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Digest-pin ONLY the un-versionable tags (latest/git-sha/rolling) so Renovate can still track them. Pinning every image hammered docker.io and errored the pin-dependencies PR on Mend; semver-tagged images track fine by tag.",
+      "matchPackageNames": [
+        "lscr.io/linuxserver/lidarr",
+        "slskd/slskd",
+        "ghcr.io/leotsgo/yaft",
+        "docker.io/docccccc/soulbeet"
+      ],
+      "pinDigests": true
     }
   ],
   "hostRules": [
