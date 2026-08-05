@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: bookorbit
-          image: ghcr.io/bookorbit/bookorbit:2.3.0
+          image: ghcr.io/bookorbit/bookorbit:2.4.0
           env:
             - name: PUID
               value: "1000"
