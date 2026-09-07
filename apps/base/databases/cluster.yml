@@ -113,3 +113,18 @@ spec:
         connectionLimit: -1
         passwordSecret:
           name: paperless-db-secret
+      # Central LiteLLM proxy (ns ai). Owner of the litellm database. Password
+      # pinned to the Vaultwarden-synced secret databases/litellm-db-secret
+      # (key `password`); the app reads the same secret's `url` key in ns ai.
+      - name: litellm
+        ensure: present
+        login: true
+        superuser: false
+        createdb: false
+        createrole: false
+        inherit: true
+        replication: false
+        bypassrls: false
+        connectionLimit: -1
+        passwordSecret:
+          name: litellm-db-secret
