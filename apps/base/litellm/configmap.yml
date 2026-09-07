@@ -8,12 +8,12 @@ data:
     model_list:
       - model_name: glm-5.3-flash
         litellm_params:
-          model: openai/commandcode/glm-5.3-flash
+          model: openai/z-ai/glm-5.3-flash
           api_base: https://api.commandcode.ai/provider/v1
           api_key: os.environ/CMD_API_KEY
       - model_name: default
         litellm_params:
-          model: openai/commandcode/glm-5.3-flash
+          model: openai/z-ai/glm-5.3-flash
           api_base: https://api.commandcode.ai/provider/v1
           api_key: os.environ/CMD_API_KEY
 
