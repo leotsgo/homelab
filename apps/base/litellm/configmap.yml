@@ -6,28 +6,19 @@ metadata:
 data:
   config.yaml: |
     model_list:
-      # Command Code list prices (per 1M tokens: $0.15 in / $0.50 out / $0.03 cache
-      # read), set as model_info so LiteLLM's spend logs show real costs — this
-      # model isn't in LiteLLM's bundled price catalog. Keep in sync with
-      # https://commandcode.ai/docs/resources/pricing-limits
+      # NOTE: with store_model_in_db: true, DB-registered models (UI / /model/new)
+      # override this file. Pricing + model entries are managed via the UI/API and
+      # live in CNPG — git holds only the bootstrap defaults here.
       - model_name: glm-5.3-flash
         litellm_params:
           model: openai/z-ai/glm-5.3-flash
           api_base: https://api.commandcode.ai/provider/v1
           api_key: os.environ/CMD_API_KEY
-        model_info:
-          input_cost_per_token: 0.00000015
-          output_cost_per_token: 0.0000005
-          cache_read_input_token_cost: 0.00000003
       - model_name: default
         litellm_params:
           model: openai/z-ai/glm-5.3-flash
           api_base: https://api.commandcode.ai/provider/v1
           api_key: os.environ/CMD_API_KEY
-        model_info:
-          input_cost_per_token: 0.00000015
-          output_cost_per_token: 0.0000005
-          cache_read_input_token_cost: 0.00000003
 
     litellm_settings:
       drop_params: true
