@@ -1,0 +1,50 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: immich
+  namespace: databases
+spec:
+  instances: 1
+  # VectorChord (Immich smart-search requirement) — pg17 variant, tag resolved
+  # in plan Task 2 Step 1 (GHCR-verified; GitHub release tag is 1.1.1 but the
+  # image tag carries the v prefix).
+  imageName: ghcr.io/tensorchord/vchord-postgres:pg17-v1.1.1
+
+  storage:
+    size: 20Gi
+
+  resources:
+    requests:
+      memory: 512Mi
+      cpu: 100m
+    limits:
+      memory: 2Gi
+      cpu: "2000m"
+
+  bootstrap:
+    initdb:
+      database: immich
+      owner: immich
+      postInitApplicationSQL:
+        - CREATE EXTENSION IF NOT EXISTS vchord CASCADE;
+        - CREATE EXTENSION IF NOT EXISTS vector;
+
+  monitoring:
+    enablePodMonitor: false
+
+  backup:
+    barmanObjectStore:
+      destinationPath: s3://leotsgo-data/immich-db
+      endpointURL: https://s3.us-east-005.backblazeb2.com
+      s3Credentials:
+        accessKeyId:
+          name: b2
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: b2
+          key: ACCESS_SECRET_KEY
+      wal:
+        compression: gzip
+      data:
+        compression: gzip
+    retentionPolicy: "14d"

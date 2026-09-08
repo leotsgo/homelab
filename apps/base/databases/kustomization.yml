@@ -8,3 +8,5 @@ resources:
   - cluster.yml
   - backup.yml
   - lan-service.yml
+  - immich-cluster.yml
+  - immich-backup.yml
