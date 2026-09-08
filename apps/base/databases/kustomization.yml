@@ -10,3 +10,4 @@ resources:
   - lan-service.yml
   - immich-cluster.yml
   - immich-backup.yml
+  - valkey.yml
