@@ -5,9 +5,8 @@ metadata:
   namespace: databases
 spec:
   instances: 1
-  # VectorChord (Immich smart-search requirement) — pg17 variant, tag resolved
-  # in plan Task 2 Step 1 (GHCR-verified; GitHub release tag is 1.1.1 but the
-  # image tag carries the v prefix).
+  # VectorChord (Immich smart-search requirement) — pg17 variant. GHCR-verified:
+  # GitHub release tag is 1.1.1 (no v) but the image tag carries the v prefix.
   imageName: ghcr.io/tensorchord/vchord-postgres:pg17-v1.1.1
 
   storage:
@@ -48,3 +47,26 @@ spec:
       data:
         compression: gzip
     retentionPolicy: "14d"
+
+  # Enforce the immich owner-role password against the Vaultwarden-synced
+  # secret databases/immich-db-secret (key `password`, also synced into ns
+  # immich for the app). Without this, CNPG re-syncs the role password to its
+  # generated `immich-app` secret on every full reconcile (e.g. operator
+  # restart), reverting any manual `ALTER ROLE` and crashlooping the app on
+  # its next pod roll. Same model as the homelab cluster roles above.
+  # NOTE: the Vaultwarden item `immich-db-secret` must exist BEFORE this
+  # reconciles (fields: `password`, `url`; namespaces: databases, immich).
+  managed:
+    roles:
+      - name: immich
+        ensure: present
+        login: true
+        superuser: false
+        createdb: false
+        createrole: false
+        inherit: true
+        replication: false
+        bypassrls: false
+        connectionLimit: -1
+        passwordSecret:
+          name: immich-db-secret
