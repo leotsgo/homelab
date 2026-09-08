@@ -15,22 +15,25 @@ spec:
       labels:
         app: immich-server
       annotations:
+        # Metrics: v3.x serves Prometheus on separate ports. API+microservices
+        # listeners are enabled with IMMICH_TELEMETRY_INCLUDE (IMMICH_METRICS
+        # is not a recognized var). Scraped by the Alloy pod-annotation rule.
         prometheus.io/scrape: "true"
-        prometheus.io/port: "2283"
+        prometheus.io/port: "8081"
         prometheus.io/path: /metrics
     spec:
       containers:
         - name: immich-server
           image: ghcr.io/immich-app/immich-server:v3.1.0
           env:
-            - name: PUID
-              value: "1000"
-            - name: PGID
-              value: "1000"
             - name: TZ
               value: "America/Sao_Paulo"
-            - name: IMMICH_METRICS
-              value: "true"
+            # v3.x telemetry switch; covers API + microservices metric servers.
+            - name: IMMICH_TELEMETRY_INCLUDE
+              value: "all"
+            # API metrics listen port (default 8081); microservices follow as 8082.
+            - name: IMMICH_API_METRICS_PORT
+              value: "8081"
             - name: DB_HOSTNAME
               value: "immich-rw.databases.svc.cluster.local"
             - name: DB_PORT
@@ -51,10 +54,11 @@ spec:
               value: "valkey.databases.svc.cluster.local"
             - name: REDIS_PORT
               value: "6379"
-            - name: IMMICH_MACHINE_LEARNING_ENABLED
-              value: "true"
-            - name: IMMICH_MACHINE_LEARNING_URL
-              value: "http://immich-machine-learning.immich.svc.cluster.local:3003"
+            # ML worker URL. The var was removed after v1.x (configured in the
+            # admin UI, default http://immich-machine-learning:3003) — set here
+            # only as belt-and-braces; harmless if ignored. Same ns, same port.
+            # NOTE: ML_ENABLED is NOT set — the server container runs both the
+            # API and the microservices worker, so ML must stay enabled.
           resources:
             requests:
               memory: "512Mi"
@@ -76,7 +80,10 @@ spec:
             initialDelaySeconds: 60
           volumeMounts:
             - name: upload
-              mountPath: /usr/src/app/upload
+              # v3.x media root is /data (was /usr/src/app/upload pre-v2). The
+              # PV must be here or uploads land on the container layer and
+              # die with the pod.
+              mountPath: /data
       volumes:
         - name: upload
           persistentVolumeClaim:
@@ -99,9 +106,8 @@ spec:
       labels:
         app: immich-machine-learning
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "3003"
-        prometheus.io/path: /metrics
+        # ML container has no Prometheus endpoint at all (v3.1.0) — no scrape.
+        # Annotation removed; keep the pod un-annotated so Alloy skips it.
     spec:
       containers:
         - name: immich-machine-learning
@@ -109,8 +115,6 @@ spec:
           env:
             - name: TZ
               value: "America/Sao_Paulo"
-            - name: IMMICH_METRICS
-              value: "true"
             - name: IMMICH_PORT
               value: "3003"
             - name: IMMICH_HOST
