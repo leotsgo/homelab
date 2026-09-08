@@ -18,7 +18,7 @@ spec:
       containers:
         - name: valkey
           image: valkey/valkey:9.1.2
-          args: ["--save", "", "--appendonly", "no"]
+          args: ["--save", "", "--appendonly", "no", "--maxmemory", "224mb", "--maxmemory-policy", "allkeys-lru"]
           resources:
             requests:
               memory: 64Mi
