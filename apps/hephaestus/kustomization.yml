@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - ../base/gateway
   - ../base/databases
+  - ../base/immich
   - ../base/bookorbit
   - ../base/wallabag
   - ../base/paperless
