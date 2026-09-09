@@ -162,9 +162,10 @@ spec:
               target_label  = "__metrics_path__"
             }
             rule {
-              source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_port"]
-              regex         = "(\\d+)"
-              replacement   = "$1:${1}"
+              source_labels = ["__meta_kubernetes_pod_ip", "__meta_kubernetes_pod_annotation_prometheus_io_port"]
+              separator     = ";"
+              regex         = "([^;]+);(\\d+)"
+              replacement   = "$1:$2"
               target_label  = "__address__"
             }
             rule {
