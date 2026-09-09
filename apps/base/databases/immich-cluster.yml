@@ -34,8 +34,17 @@ spec:
       database: immich
       owner: immich
       postInitApplicationSQL:
+        # vchord requires shared_preload_libraries (set above); CASCADE pulls in
+        # its pgvector dependency. cube+earthdistance are Immich requirements
+        # that need superuser — created here as postgres since the app role
+        # must be able to manage them (Immich's docs make the app user a
+        # superuser; we instead pre-create the extensions and keep the role
+        # unprivileged for everything else).
         - CREATE EXTENSION IF NOT EXISTS vchord CASCADE;
         - CREATE EXTENSION IF NOT EXISTS vector;
+        - CREATE EXTENSION IF NOT EXISTS cube;
+        - CREATE EXTENSION IF NOT EXISTS earthdistance;
+        - GRANT ALL ON SCHEMA public TO immich;
 
   monitoring:
     enablePodMonitor: false
@@ -65,12 +74,16 @@ spec:
   # its next pod roll. Same model as the homelab cluster roles above.
   # NOTE: the Vaultwarden item `immich-db-secret` must exist BEFORE this
   # reconciles (fields: `password`, `url`; namespaces: databases, immich).
+  # ponytail: role is declared superuser=true (Immich creates extensions like
+  # earthdistance at startup; pre-creating them in initdb covers fresh boots
+  # but future Immich versions may add more — superuser is the upgrade-safe
+  # choice; tighten back to false if Immich ever stops needing it).
   managed:
     roles:
       - name: immich
         ensure: present
         login: true
-        superuser: false
+        superuser: true
         createdb: false
         createrole: false
         inherit: true
