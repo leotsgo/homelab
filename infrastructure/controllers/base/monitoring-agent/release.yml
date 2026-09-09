@@ -148,6 +148,36 @@ spec:
             forward_to = [prometheus.remote_write.zeus.receiver]
           }
 
+          // -- per-app pods: opt-in via prometheus.io/* pod annotations (immich, cnpg, future apps) --
+          discovery.relabel "pod_metrics" {
+            targets = discovery.kubernetes.pods.targets
+            rule {
+              source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_scrape"]
+              regex         = "true"
+              action        = "keep"
+            }
+            rule {
+              source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_path"]
+              regex         = "(.+)"
+              target_label  = "__metrics_path__"
+            }
+            rule {
+              source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_port"]
+              regex         = "(\d+)"
+              replacement   = "$1:${1}"
+              target_label  = "__address__"
+            }
+            rule {
+              source_labels = ["__meta_kubernetes_namespace"]
+              target_label  = "namespace"
+            }
+          }
+          prometheus.scrape "pod_metrics" {
+            targets    = discovery.relabel.pod_metrics.output
+            job_name   = "pod-metrics"
+            forward_to = [prometheus.remote_write.zeus.receiver]
+          }
+
           prometheus.remote_write "zeus" {
             endpoint {
               url = "https://prometheus.leotsgo.dev/api/v1/write"
