@@ -24,6 +24,11 @@ spec:
       memory: 2Gi
       cpu: "2000m"
 
+  postgresql:
+    # vchord (VectorChord) refuses to CREATE EXTENSION without being preloaded.
+    shared_preload_libraries:
+      - vchord
+
   bootstrap:
     initdb:
       database: immich
