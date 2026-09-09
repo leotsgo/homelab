@@ -5,9 +5,13 @@ metadata:
   namespace: databases
 spec:
   instances: 1
-  # VectorChord (Immich smart-search requirement) — pg17 variant. GHCR-verified:
-  # GitHub release tag is 1.1.1 (no v) but the image tag carries the v prefix.
-  imageName: ghcr.io/tensorchord/vchord-postgres:pg17-v1.1.1
+  # VectorChord (Immich smart-search requirement). Community image's tags
+  # (pg17-v1.1.1) fail CNPG's admission webhook (needs a pg-major-parsable
+  # tag), so: thin build on ghcr.io/cloudnative-pg/postgresql:17-bookworm +
+  # VectorChord 1.1.1 .deb (needs glibc>=2.35 → bookworm, not bullseye).
+  # Dockerfile lives in homelab-network scratch; rebuild: apt install of
+  # https://github.com/tensorchord/VectorChord/releases/download/1.1.1/postgresql-17-vchord_1.1.1-1_amd64.deb
+  imageName: ghcr.io/leotsgo/cnpg-vchord:17
 
   storage:
     size: 20Gi
