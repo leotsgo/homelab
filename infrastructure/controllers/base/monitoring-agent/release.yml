@@ -163,7 +163,7 @@ spec:
             }
             rule {
               source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_port"]
-              regex         = "(\d+)"
+              regex         = "(\\d+)"
               replacement   = "$1:${1}"
               target_label  = "__address__"
             }
