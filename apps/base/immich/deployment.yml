@@ -64,7 +64,9 @@ spec:
               memory: "512Mi"
               cpu: "200m"
             limits:
-              memory: "2Gi"
+              # API + microservices + ffmpeg transcode share this container;
+              # 2Gi OOMKilled during a photo batch with video transcoding.
+              memory: "4Gi"
               cpu: "2000m"
           ports:
             - containerPort: 2283
