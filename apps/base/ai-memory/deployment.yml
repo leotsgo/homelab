@@ -18,7 +18,15 @@ spec:
       containers:
         - name: ai-memory
           image: akitaonrails/ai-memory:2.1.1
+          # args REPLACE the image CMD (cli.rs requires a subcommand; serve
+          # transport defaults to stdio which dies on stdin EOF) — spell out
+          # the full serve invocation. Image ENTRYPOINT is the ai-memory binary.
           args:
+            - serve
+            - --transport
+            - http
+            - --bind
+            - 0.0.0.0:49374
             - --enable-web
           env:
             - name: AI_MEMORY_AUTH_TOKEN
