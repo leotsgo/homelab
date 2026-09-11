@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-memory
+  namespace: ai
+  labels:
+    app: ai-memory
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ai-memory
+  template:
+    metadata:
+      labels:
+        app: ai-memory
+    spec:
+      containers:
+        - name: ai-memory
+          image: akitaonrails/ai-memory:2.1.1
+          args:
+            - --enable-web
+          env:
+            - name: AI_MEMORY_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: ai-memory-secrets
+                  key: AUTH_TOKEN
+            - name: AI_MEMORY_LLM_PROVIDER
+              value: openai-compat
+            - name: AI_MEMORY_LLM_BASE_URL
+              value: https://litellm.leotsgo.dev/v1
+            - name: AI_MEMORY_LLM_MODEL
+              value: glm-5.3-flash
+            - name: LLM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ai-memory-secrets
+                  key: LITELLM_API_KEY
+            - name: AI_MEMORY_ALLOWED_HOSTS
+              value: aimemory.leotsgo.dev,localhost,127.0.0.1
+            - name: AI_MEMORY_AUTH__SECURE_COOKIE
+              value: "true"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+          ports:
+            - containerPort: 49374
+          readinessProbe:
+            tcpSocket:
+              port: 49374
+            initialDelaySeconds: 10
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: ai-memory-data
