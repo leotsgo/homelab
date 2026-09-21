@@ -20,11 +20,13 @@ spec:
       containers:
         - name: yana
           # Fork build (branch `development`, merged feat/settings +
-          # feat/default-dir): per-folder sort via .settings.yml, space-level
-          # daily-note override, default new-note folder. Rollback: flip back
-          # to the upstream digest below (recorded 2026-09-21).
+          # feat/default-dir + POST->PUT fix): per-folder sort via
+          # .settings.yml, space-level daily-note override, default new-note
+          # folder. Pinned by digest because branch tags float and kubelet
+          # caches tag->digest. Rollback: flip back to the upstream digest
+          # recorded 2026-09-21 below.
           # Upstream digest: ghcr.io/madeofpendletonwool/yana@sha256:26abb88fde88f7e8f2ab764ac45e859aad7e8adbe7f8619e6c97f1cf8b18df16
-          image: ghcr.io/leotsgo/yana:development
+          image: ghcr.io/leotsgo/yana@sha256:3e11f4b08c4fc64d220fe99a47df60cd00de59736206603d5d43c0b081580206
           envFrom:
             - configMapRef:
                 name: yana-config
