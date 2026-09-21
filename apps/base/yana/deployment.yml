@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yana
+  namespace: yana
+  labels:
+    app: yana
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: yana
+  template:
+    metadata:
+      labels:
+        app: yana
+    spec:
+      containers:
+        - name: yana
+          # Pinned to the latest tag's digest at deploy time (no version
+          # tags exist upstream yet). Bump deliberately; record the new
+          # digest in notes/yana-k3s.md.
+          image: ghcr.io/madeofpendletonwool/yana@sha256:26abb88fde88f7e8f2ab764ac45e859aad7e8adbe7f8619e6c97f1cf8b18df16
+          envFrom:
+            - configMapRef:
+                name: yana-config
+          ports:
+            - containerPort: 8080
+              name: http
+            - containerPort: 8081
+              name: content
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "50m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          volumeMounts:
+            - name: data
+              mountPath: /notes
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: yana-data

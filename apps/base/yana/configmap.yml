@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: yana-config
+  namespace: yana
+data:
+  YANA_NOTES_ROOT: "/notes"
+  YANA_LISTEN: ":8080"
+  YANA_CONTENT_LISTEN: ":8081"
+  YANA_CONTENT_ORIGIN: "https://yana-content.leotsgo.dev"
+  YANA_LOG_LEVEL: "info"
+  YANA_GIT_USER_NAME: "leotsgo"
+  YANA_GIT_USER_EMAIL: "leotsgo@yana.local"
+  TZ: "America/Sao_Paulo"

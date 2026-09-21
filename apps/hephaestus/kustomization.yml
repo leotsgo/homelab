@@ -15,3 +15,4 @@ resources:
   - ../base/litellm
   - ../base/ai-memory
   - ../base/pinepods
+  - ../base/yana

@@ -1,0 +1,64 @@
+# Gateway API HTTPRoutes for YANA. The HTML-note content origin (:8081) MUST be a
+# different origin from the app (:8080) — that origin split is the sandbox boundary
+# for .html notes. Both share the house security-header set (CSP deliberately
+# omitted, same as every app) and the shared gateway/homelab Gateway wildcard cert.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: yana-security-headers
+  namespace: yana
+spec:
+  headers:
+    browserXssFilter: true
+    contentTypeNosniff: true
+    forceSTSHeader: true
+    stsIncludeSubdomains: true
+    stsPreload: true
+    stsSeconds: 31536000
+    customFrameOptionsValue: "SAMEORIGIN"
+    referrerPolicy: "strict-origin-when-cross-origin"
+    permissionsPolicy: "camera=(), microphone=(), geolocation=()"
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: yana
+  namespace: yana
+spec:
+  parentRefs:
+    - name: homelab
+      namespace: gateway
+  hostnames:
+    - yana.leotsgo.dev
+  rules:
+    - filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: yana-security-headers
+      backendRefs:
+        - name: yana
+          port: 8080
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: yana-content
+  namespace: yana
+spec:
+  parentRefs:
+    - name: homelab
+      namespace: gateway
+  hostnames:
+    - yana-content.leotsgo.dev
+  rules:
+    - filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: yana-security-headers
+      backendRefs:
+        - name: yana-content
+          port: 8081
