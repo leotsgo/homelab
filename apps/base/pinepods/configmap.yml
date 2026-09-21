@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pinepods-config
+  namespace: pinepods
+data:
+  SEARCH_API_URL: "https://search.pinepods.online/api/search"
+  PEOPLE_API_URL: "https://people.pinepods.online"
+  HOSTNAME: "https://pinepods.leotsgo.dev"
+  DB_TYPE: "postgresql"
+  DB_HOST: "homelab-rw.databases.svc"
+  DB_PORT: "5432"
+  DB_NAME: "pinepods"
+  VALKEY_HOST: "valkey.databases.svc"
+  VALKEY_PORT: "6379"
+  DEBUG_MODE: "false"
+  TZ: "America/Argentina/Buenos_Aires"
+  DEFAULT_LANGUAGE: "en"

@@ -14,3 +14,4 @@ resources:
   - ../base/yaft
   - ../base/litellm
   - ../base/ai-memory
+  - ../base/pinepods
