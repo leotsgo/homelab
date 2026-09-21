@@ -128,3 +128,20 @@ spec:
         connectionLimit: -1
         passwordSecret:
           name: litellm-db-secret
+      # Pinepods (ns pinepods). Owner of the pinepods database. Password pinned
+      # to the Vaultwarden-synced secret databases/pinepods-db-secret (keys
+      # `username`+`password`); the app reads the same secret's `url` +
+      # `admin_password` keys in ns pinepods. Item existed before this
+      # reconciled (created 2026-09-20).
+      - name: pinepods
+        ensure: present
+        login: true
+        superuser: false
+        createdb: false
+        createrole: false
+        inherit: true
+        replication: false
+        bypassrls: false
+        connectionLimit: -1
+        passwordSecret:
+          name: pinepods-db-secret
