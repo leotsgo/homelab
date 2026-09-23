@@ -26,7 +26,7 @@ spec:
           # caches tag->digest. Rollback: flip back to the upstream digest
           # recorded 2026-09-21 below.
           # Upstream digest: ghcr.io/madeofpendletonwool/yana@sha256:26abb88fde88f7e8f2ab764ac45e859aad7e8adbe7f8619e6c97f1cf8b18df16
-          image: ghcr.io/leotsgo/yana@sha256:c711115105db9da42e3c863c0c0d5dea035f6f478af8f99df8009ffaa7bb0692
+          image: ghcr.io/leotsgo/yana@sha256:c9d8c97b495831610154cd0353f579196d2f14f637c95dd48d2a2a85a15549e8
           envFrom:
             - configMapRef:
                 name: yana-config
