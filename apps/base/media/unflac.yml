@@ -79,7 +79,7 @@ spec:
                 limits: { memory: "768Mi", cpu: "1500m" }
           containers:
             - name: unflac
-              image: jrottenberg/ffmpeg:8-alpine
+              image: jrottenberg/ffmpeg:9-alpine
               command: ["/bin/sh", "/script/split.sh"]
               volumeMounts:
                 - { name: data, mountPath: /data }
