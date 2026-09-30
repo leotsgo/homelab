@@ -29,7 +29,7 @@ spec:
           # Fork build (leotsgo/yana main = upstream + per-folder sort). Renovate
           # tracks the date-semver tag the fork CI publishes on every sync;
           # renovate.json's custom regex manager picks up the new v0.0.* tag.
-          image: ghcr.io/leotsgo/yana:v0.0.202609232132
+          image: ghcr.io/leotsgo/yana:v0.0.202609301814
           envFrom:
             - configMapRef:
                 name: yana-config
