@@ -46,7 +46,7 @@ spec:
                   name: ai-memory-secrets
                   key: LITELLM_API_KEY
             - name: AI_MEMORY_ALLOWED_HOSTS
-              value: aimemory.leotsgo.dev,localhost,127.0.0.1
+              value: aimemory.leotsgo.dev,localhost,127.0.0.1,ai-memory.ai.svc.cluster.local
             - name: AI_MEMORY_AUTH__SECURE_COOKIE
               value: "true"
           resources:
