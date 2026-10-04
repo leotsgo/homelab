@@ -9,6 +9,11 @@ spec:
   replicas: 1
   strategy:
     type: Recreate
+    # Explicit null: clears the rollingUpdate{maxSurge,maxUnavailable} block left
+    # in the live object by RollingUpdate defaults. The API rejects a Deployment
+    # with type Recreate together with a rollingUpdate block (Flux SSA dry-run
+    # failure observed 2026-10-04).
+    rollingUpdate: null
   selector:
     matchLabels:
       app: ai-memory
