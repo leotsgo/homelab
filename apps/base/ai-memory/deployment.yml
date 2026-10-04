@@ -44,7 +44,12 @@ spec:
             - name: AI_MEMORY_LLM_PROVIDER
               value: openai-compat
             - name: AI_MEMORY_LLM_BASE_URL
-              value: https://litellm.leotsgo.dev/v1
+              # In-cluster service, NOT litellm.leotsgo.dev: the .dev name resolves
+              # (pod-path DNS verified) to the node LAN IP, forcing a hairpin
+              # pod -> LAN -> ingress back into the same namespace. From inside the
+              # pod that path never connected (llm provider error since pod start,
+              # 2026-10-04); ClusterIP svc is ~6ms away and always routes.
+              value: http://litellm.ai.svc.cluster.local:4000/v1
             - name: AI_MEMORY_LLM_MODEL
               value: glm-5.3-flash
             - name: LLM_API_KEY
