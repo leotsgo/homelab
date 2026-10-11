@@ -1,0 +1,87 @@
+# The classic self-hosted runner for the game repo: one pod, dind sidecar,
+# self-registration from the Vaultwarden-synced arc-github-token PAT (key
+# github_token; classic, repo scope). It registers with the label self-hosted —
+# the one the workflows pin with runs-on — and picks jobs for as long as the
+# pod lives. ARC's message broker never delivered jobs to a scale set here, so
+# the plain registration won.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: arc-system
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hopwing-runner
+  namespace: arc-system
+  labels:
+    app: hopwing-runner
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hopwing-runner
+  template:
+    metadata:
+      labels:
+        app: hopwing-runner
+    spec:
+      volumes:
+        - name: work
+          emptyDir: {}
+        - name: dind-sock
+          emptyDir: {}
+      containers:
+        - name: runner
+          image: ghcr.io/actions/actions-runner:2.338.0
+          command:
+            - /bin/sh
+            - -c
+            - |
+              TOKEN=$(curl -fsSL -X POST \
+                -H "Authorization: Bearer $github_token" \
+                -H "Accept: application/vnd.github+json" \
+                https://api.github.com/repos/hopwing/undefined-game/actions/runners/registration-token \
+                | grep -o '"token": *"[^"]*"' | sed 's/.*: *"//; s/"//')
+              [ -n "$TOKEN" ] || { echo "no registration token"; exit 1; }
+              ./config.sh --url https://github.com/hopwing/undefined-game --token "$TOKEN" \
+                --labels self-hosted --unattended
+              exec ./run.sh
+          envFrom:
+            - secretRef:
+                name: arc-github-token
+          env:
+            - name: DOCKER_HOST
+              value: unix:///var/run/docker.sock
+            - name: RUNNER_WAIT_FOR_DOCKER_IN_SECONDS
+              value: "120"
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 2Gi
+              cpu: "2000m"
+          volumeMounts:
+            - name: work
+              mountPath: /home/runner/_work
+            - name: dind-sock
+              mountPath: /var/run
+        - name: dind
+          image: docker:27-dind
+          args: ["dockerd", "--host=unix:///var/run/docker.sock"]
+          securityContext:
+            privileged: true
+          restartPolicy: Always
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 50m
+            limits:
+              memory: 1Gi
+              cpu: "1000m"
+          volumeMounts:
+            - name: work
+              mountPath: /home/runner/_work
+            - name: dind-sock
+              mountPath: /var/run
