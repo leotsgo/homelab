@@ -28,7 +28,7 @@ spec:
         - name: ghcr-pull
       initContainers:
         - name: migrate
-          image: ghcr.io/vsssp/hopwing-api:latest
+          image: ghcr.io/vsssp/hopwing-api:sha-ac6ed2e
           args: ["migrate"]
           envFrom:
             - secretRef:
@@ -43,7 +43,7 @@ spec:
               value: postgres://hopwing:$(DB_PASSWORD)@homelab-rw.databases.svc.cluster.local:5432/hopwing
       containers:
         - name: hopwing
-          image: ghcr.io/vsssp/hopwing-api:latest
+          image: ghcr.io/vsssp/hopwing-api:sha-ac6ed2e
           envFrom:
             - secretRef:
                 name: hopwing-secrets
