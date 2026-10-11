@@ -27,4 +27,6 @@ spec:
     containerMode:
       type: dind
     maxRunners: 1
-    minRunners: 0
+    # One warm runner: the message broker never delivers job messages to this
+    # scale set, so a 0-idle scale set would never wake up.
+    minRunners: 1
