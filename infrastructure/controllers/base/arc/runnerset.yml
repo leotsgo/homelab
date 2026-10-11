@@ -1,4 +1,4 @@
-# The self-hosted runners for VSSSP/undefined-game. The release name (hopwing)
+# The self-hosted runners for hopwing/undefined-game. The release name (hopwing)
 # is the label the workflows pin with runs-on: [self-hosted, hopwing]. The
 # GitHub token never lives in git: the Vaultwarden-synced secret arc-github-token
 # (key github_token; a classic PAT with the repo scope) is referenced by name.
@@ -22,7 +22,7 @@ spec:
         name: actions-runner-controller
         namespace: arc-system
   values:
-    githubConfigUrl: https://github.com/VSSSP/undefined-game
+    githubConfigUrl: https://github.com/hopwing/undefined-game
     githubConfigSecret: arc-github-token
     containerMode:
       type: dind
