@@ -27,6 +27,7 @@ spec:
     # The labels the runners register with; jobs match on them. Empty, no job
     # ever matches (the runner does not add self-hosted on its own here).
     scaleSetLabels: ["self-hosted", "Linux", "X64"]
+    runnerGroup: Default
     containerMode:
       type: dind
     maxRunners: 1
