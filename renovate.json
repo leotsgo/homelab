@@ -9,8 +9,8 @@
     "custom.regex"
   ],
   "ignoreDeps": [
-    "ghcr.io/vsssp/hopwing-api",
-    "ghcr.io/vsssp/hopwing-game"
+    "ghcr.io/hopwing/hopwing-api",
+    "ghcr.io/hopwing/hopwing-game"
   ],
   "description": "prHourlyLimit 0 lifts config:recommended's 2 PRs/hour throttle that parked cert-manager/cnpg/KSM in the dashboard Rate-Limited list, so every detected in-cluster update opens a PR.",
   "prHourlyLimit": 0,
