@@ -24,7 +24,7 @@ spec:
         - name: ghcr-pull
       containers:
         - name: game
-          image: ghcr.io/vsssp/hopwing-game:latest
+          image: ghcr.io/vsssp/hopwing-game:sha-1ba078c
           resources:
             requests:
               memory: 16Mi
