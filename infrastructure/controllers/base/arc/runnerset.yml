@@ -24,6 +24,9 @@ spec:
   values:
     githubConfigUrl: https://github.com/hopwing/undefined-game
     githubConfigSecret: arc-github-token
+    # The labels the runners register with; jobs match on them. Empty, no job
+    # ever matches (the runner does not add self-hosted on its own here).
+    scaleSetLabels: ["self-hosted", "Linux", "X64"]
     containerMode:
       type: dind
     maxRunners: 1
