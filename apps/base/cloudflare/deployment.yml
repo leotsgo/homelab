@@ -1,0 +1,43 @@
+# Cloudflare Tunnel, remotely managed: cloudflared dials out to Cloudflare's
+# edge, so the router keeps no inbound ports open. Public hostnames -> cluster
+# services (e.g. hopwing.hopwing.svc.cluster.local:8787) are wired in the
+# Cloudflare dashboard (Zero Trust > Networks > Tunnels), not here. The token
+# comes from the dashboard and lives in the Vaultwarden-synced secret
+# cloudflared-token (key `token`).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudflared
+  namespace: cloudflare
+  labels:
+    app: cloudflared
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloudflared
+  template:
+    metadata:
+      labels:
+        app: cloudflared
+    spec:
+      containers:
+        - name: cloudflared
+          image: cloudflare/cloudflared:2025.5.0
+          args:
+            - tunnel
+            - --no-autoupdate
+            - run
+          env:
+            - name: TUNNEL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: cloudflared-token
+                  key: token
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 10m
+            limits:
+              memory: 256Mi
+              cpu: 500m

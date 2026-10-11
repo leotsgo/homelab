@@ -1,0 +1,86 @@
+# The Hopwing game API (VSSSP/undefined-game, apps/api). The image is built and
+# pushed by that repo's deploy workflow, which bumps the tag here; Flux ships
+# it. Secrets live outside git (Vaultwarden sync), like every other app:
+# - hopwing-secrets: JWT_SECRET, ADMIN_TOKEN, CORS_ORIGINS, LEGAL_TERMS_URL,
+#   LEGAL_PRIVACY_URL
+# - hopwing-db-secret: key `password`, shared with the CNPG managed role
+# - ghcr-pull: docker-registry secret for the private GHCR image
+# First boot runs migrations in the init container; the API refuses to serve
+# until they all ran (see /readyz).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hopwing
+  namespace: hopwing
+  labels:
+    app: hopwing
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hopwing
+  template:
+    metadata:
+      labels:
+        app: hopwing
+    spec:
+      imagePullSecrets:
+        - name: ghcr-pull
+      initContainers:
+        - name: migrate
+          image: ghcr.io/vsssp/hopwing-api:latest
+          args: ["migrate"]
+          envFrom:
+            - secretRef:
+                name: hopwing-secrets
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: hopwing-db-secret
+                  key: password
+            - name: DATABASE_URL
+              value: postgres://hopwing:$(DB_PASSWORD)@homelab-rw.databases.svc.cluster.local:5432/hopwing
+      containers:
+        - name: hopwing
+          image: ghcr.io/vsssp/hopwing-api:latest
+          envFrom:
+            - secretRef:
+                name: hopwing-secrets
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: hopwing-db-secret
+                  key: password
+            - name: DATABASE_URL
+              value: postgres://hopwing:$(DB_PASSWORD)@homelab-rw.databases.svc.cluster.local:5432/hopwing
+            - name: TRUST_PROXY
+              # One hop: cloudflared.
+              value: "1"
+            - name: HOST
+              value: 0.0.0.0
+            - name: PORT
+              value: "8787"
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 50m
+            limits:
+              memory: 512Mi
+              cpu: "1000m"
+          ports:
+            - containerPort: 8787
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8787
+            periodSeconds: 30
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8787
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6

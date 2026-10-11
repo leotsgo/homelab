@@ -145,3 +145,22 @@ spec:
         connectionLimit: -1
         passwordSecret:
           name: pinepods-db-secret
+      # Hopwing game API (ns hopwing, repo VSSSP/undefined-game). Owner of the
+      # hopwing database. Password pinned to the Vaultwarden-synced secret
+      # databases/hopwing-db-secret (key `password`); the app reads the same
+      # key in ns hopwing. managed.roles does not create databases: run once,
+      # after the role exists:
+      #   kubectl exec -n databases homelab-1 -- \
+      #     psql -c 'CREATE DATABASE hopwing OWNER hopwing'
+      - name: hopwing
+        ensure: present
+        login: true
+        superuser: false
+        createdb: false
+        createrole: false
+        inherit: true
+        replication: false
+        bypassrls: false
+        connectionLimit: -1
+        passwordSecret:
+          name: hopwing-db-secret
