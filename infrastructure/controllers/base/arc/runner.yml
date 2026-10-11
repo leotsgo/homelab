@@ -73,7 +73,10 @@ spec:
               mountPath: /var/run
         - name: dind
           image: docker:27-dind
-          args: ["dockerd", "--host=unix:///var/run/docker.sock", "--group=123"]
+          # --mtu matches the pod network (1450 on k3s VXLAN); without it the
+          # docker0 bridge defaults to 1500 and large TLS handshakes to ghcr.io
+          # die inside the bridge.
+          args: ["dockerd", "--host=unix:///var/run/docker.sock", "--group=123", "--mtu=1450"]
           securityContext:
             privileged: true
           restartPolicy: Always
