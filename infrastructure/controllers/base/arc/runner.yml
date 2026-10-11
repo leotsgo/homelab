@@ -26,6 +26,10 @@ spec:
       labels:
         app: hopwing-runner
     spec:
+      # fsGroup hands every container the gid 123: the one dockerd chowns the
+      # socket to, so the runner user reaches /var/run/docker.sock.
+      securityContext:
+        fsGroup: 123
       volumes:
         - name: work
           emptyDir: {}
@@ -69,7 +73,7 @@ spec:
               mountPath: /var/run
         - name: dind
           image: docker:27-dind
-          args: ["dockerd", "--host=unix:///var/run/docker.sock"]
+          args: ["dockerd", "--host=unix:///var/run/docker.sock", "--group=123"]
           securityContext:
             privileged: true
           restartPolicy: Always
