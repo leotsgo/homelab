@@ -34,6 +34,12 @@ spec:
             - secretRef:
                 name: hopwing-secrets
           env:
+            - name: TRUST_PROXY
+              value: "1"
+            - name: HOST
+              value: 0.0.0.0
+            - name: PORT
+              value: "8787"
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
