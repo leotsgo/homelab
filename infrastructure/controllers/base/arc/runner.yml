@@ -72,7 +72,7 @@ spec:
             - name: dind-sock
               mountPath: /var/run
         - name: dind
-          image: docker:27-dind
+          image: docker:29-dind
           # --mtu matches the pod network (1450 on k3s VXLAN); without it the
           # docker0 bridge defaults to 1500 and large TLS handshakes to ghcr.io
           # die inside the bridge.
