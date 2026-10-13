@@ -1,0 +1,49 @@
+# The web client (Vite build) at the host root; the API answers under /v1 plus
+# the probes (see httproute.yml). Game and API share the origin, so the browser
+# version needs no CORS. Image is built by the game repo's deploy workflow,
+# which bumps the tag here; secrets: none (static site), but the private image
+# needs the ghcr-pull secret.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hopwing-game
+  namespace: hopwing
+  labels:
+    app: hopwing-game
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hopwing-game
+  template:
+    metadata:
+      labels:
+        app: hopwing-game
+    spec:
+      imagePullSecrets:
+        - name: ghcr-pull
+      containers:
+        - name: game
+          image: ghcr.io/hopwing/hopwing-game:sha-c222015
+          resources:
+            requests:
+              memory: 16Mi
+              cpu: 10m
+            limits:
+              memory: 128Mi
+              cpu: 200m
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hopwing-game
+  namespace: hopwing
+spec:
+  selector:
+    app: hopwing-game
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

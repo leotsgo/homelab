@@ -10,6 +10,21 @@ spec:
   hostnames:
     - hopwing.leotsgo.dev
   rules:
-    - backendRefs:
+    # The API: everything under /v1 (routes and store webhooks) plus the probes.
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /v1
+        - path:
+            type: Exact
+            value: /healthz
+        - path:
+            type: Exact
+            value: /readyz
+      backendRefs:
         - name: hopwing
           port: 8787
+    # Everything else: the web client.
+    - backendRefs:
+        - name: hopwing-game
+          port: 80

@@ -1,4 +1,4 @@
-# The Hopwing game API (VSSSP/undefined-game, apps/api). The image is built and
+# The Hopwing game API (hopwing/undefined-game, apps/api). The image is built and
 # pushed by that repo's deploy workflow, which bumps the tag here; Flux ships
 # it. Secrets live outside git (Vaultwarden sync), like every other app:
 # - hopwing-secrets: JWT_SECRET, ADMIN_TOKEN, CORS_ORIGINS, LEGAL_TERMS_URL,
@@ -28,12 +28,18 @@ spec:
         - name: ghcr-pull
       initContainers:
         - name: migrate
-          image: ghcr.io/vsssp/hopwing-api:latest
+          image: ghcr.io/hopwing/hopwing-api:sha-c222015
           args: ["migrate"]
           envFrom:
             - secretRef:
                 name: hopwing-secrets
           env:
+            - name: TRUST_PROXY
+              value: "1"
+            - name: HOST
+              value: 0.0.0.0
+            - name: PORT
+              value: "8787"
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -43,7 +49,7 @@ spec:
               value: postgres://hopwing:$(DB_PASSWORD)@homelab-rw.databases.svc.cluster.local:5432/hopwing
       containers:
         - name: hopwing
-          image: ghcr.io/vsssp/hopwing-api:latest
+          image: ghcr.io/hopwing/hopwing-api:sha-c222015
           envFrom:
             - secretRef:
                 name: hopwing-secrets

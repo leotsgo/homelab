@@ -145,7 +145,7 @@ spec:
         connectionLimit: -1
         passwordSecret:
           name: pinepods-db-secret
-      # Hopwing game API (ns hopwing, repo VSSSP/undefined-game). Owner of the
+      # Hopwing game API (ns hopwing, repo hopwing/undefined-game). Owner of the
       # hopwing database. Password pinned to the Vaultwarden-synced secret
       # databases/hopwing-db-secret (key `password`); the app reads the same
       # key in ns hopwing. managed.roles does not create databases: run once,

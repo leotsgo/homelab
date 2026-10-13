@@ -8,3 +8,4 @@ resources:
   - service.yml
   - httproute.yml
   - deployment.yml
+  - game.yml

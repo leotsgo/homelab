@@ -4,5 +4,6 @@ resources:
   - ../base/cert-manager
   - ../base/cloudnative-pg
   - ../base/vaultwarden-sync
+  - ../base/arc
   - ../base/monitoring-agent
   - ../base/node-tuning
