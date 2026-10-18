@@ -1,9 +1,10 @@
 # The classic self-hosted runner for the game repo: one pod, dind sidecar,
 # self-registration from the Vaultwarden-synced arc-github-token PAT (key
 # github_token; classic, repo scope). It registers with the label self-hosted —
-# the one the workflows pin with runs-on — and picks jobs for as long as the
-# pod lives. ARC's message broker never delivered jobs to a scale set here, so
-# the plain registration won.
+# the one the workflows pin with runs-on. --replace re-registers over the
+# stale entry GitHub keeps under this pod's name once the container is wiped
+# (config.sh remove can't see that entry, it lives server-side). ARC's message
+# broker never delivered jobs to a scale set here, so the plain registration won.
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -42,12 +43,9 @@ spec:
             - /bin/sh
             - -c
             - |
-              REMOVE=$(curl -fsSL -X POST \
-                -H "Authorization: Bearer $github_token" \
-                -H "Accept: application/vnd.github+json" \
-                https://api.github.com/repos/hopwing/undefined-game/actions/runners/remove-token \
-                | grep -o '"token": *"[^"]*"' | sed 's/.*: *"//; s/"//')
-              ./config.sh remove --token "$REMOVE" --unattended >/dev/null 2>&1 || true
+              # ponytail: --replace only cleanups the SAME pod-name entry; renamed
+              # pods leave offline ancestors behind — sweep by hand on the runners
+              # page if they accumulate.
               TOKEN=$(curl -fsSL -X POST \
                 -H "Authorization: Bearer $github_token" \
                 -H "Accept: application/vnd.github+json" \
@@ -55,7 +53,7 @@ spec:
                 | grep -o '"token": *"[^"]*"' | sed 's/.*: *"//; s/"//')
               [ -n "$TOKEN" ] || { echo "no registration token"; exit 1; }
               ./config.sh --url https://github.com/hopwing/undefined-game --token "$TOKEN" \
-                --labels self-hosted --unattended
+                --labels self-hosted --unattended --replace
               exec ./run.sh
           envFrom:
             - secretRef:
