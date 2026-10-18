@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: blog
-          image: ghcr.io/leotsgo/blog:sha-615da87
+          image: ghcr.io/leotsgo/blog:sha-a4b519b
           resources:
             requests:
               memory: 16Mi
