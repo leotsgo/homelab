@@ -17,4 +17,5 @@ resources:
   - ../base/pinepods
   - ../base/yana
   - ../base/hopwing
+  - ../base/blog
   - ../base/cloudflare
