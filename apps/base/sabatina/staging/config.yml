@@ -17,7 +17,7 @@ data:
   TRUST_PROXY: "false"
   SIGNUP: "closed"
   TYPST_FONT_PATH: "/usr/share/fonts"
-  MAIL_FROM: "Sabatina staging <login@sabatina.app>"
+  MAIL_FROM: "Sabatina staging <noreply@sabatina.app>"
   LLM_BASE_URL: "https://api.commandcode.ai/provider/v1"
   MODEL_DEFAULT: "deepseek/deepseek-v4.1-flash"
   OPENAI_JSON_MODE: "object"
