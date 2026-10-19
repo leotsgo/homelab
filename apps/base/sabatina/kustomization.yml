@@ -1,0 +1,12 @@
+# Sabatina (leotsgo/resume-app), two environments on this cluster:
+#   staging/  ns sabatina-staging, sabatina.leotsgo.dev through the shared Gateway (LAN and
+#             tailnet only), sign-up closed; the app's deploy workflow bumps its tag on every
+#             push to main.
+#   prod/     ns sabatina, sabatina.app through the cluster-wide Cloudflare tunnel; its tag
+#             moves only when the app's promote workflow is run.
+# base/ holds what both share. Secrets come from Vaultwarden (see base/serve.yml).
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - staging
+  - prod

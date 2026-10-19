@@ -19,3 +19,4 @@ resources:
   - ../base/hopwing
   - ../base/blog
   - ../base/cloudflare
+  - ../base/sabatina

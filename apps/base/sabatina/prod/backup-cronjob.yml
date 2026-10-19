@@ -1,0 +1,129 @@
+# Nightly pg_dump of the prod database -> a SEPARATE Backblaze B2 bucket with its own key
+# (Vaultwarden item sabatina-backup: BACKUP_BUCKET and the four RCLONE_CONFIG_B2BACKUP_*
+# values). Dumps older than 30 days are deleted; the bucket's "keep only the last version"
+# lifecycle rule then purges them. Restore: scripts/restore-drill.sh in leotsgo/resume-app.
+# The CNPG barman backups of the whole cluster are the second layer.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: sabatina-backup
+  labels:
+    app.kubernetes.io/name: sabatina
+    app.kubernetes.io/component: backup
+spec:
+  schedule: "30 3 * * *"
+  timeZone: "Etc/UTC"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 3600
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: sabatina
+            app.kubernetes.io/component: backup
+        spec:
+          restartPolicy: Never
+          automountServiceAccountToken: false
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65532
+            runAsGroup: 65532
+            seccompProfile:
+              type: RuntimeDefault
+          initContainers:
+            - name: dump
+              image: postgres:18.6
+              command: ["sh", "-c"]
+              args:
+                - pg_dump -Fc --no-owner -d "$BACKUP_DATABASE_URL" -f /work/sabatina.dump
+              env:
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: sabatina-db
+                      key: password
+                - name: BACKUP_DATABASE_URL
+                  value: postgres://sabatina:$(DB_PASSWORD)@homelab-rw.databases.svc.cluster.local:5432/sabatina?sslmode=require
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: ["ALL"]
+              volumeMounts:
+                - name: work
+                  mountPath: /work
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 128Mi
+                limits:
+                  memory: 512Mi
+          containers:
+            - name: upload
+              image: rclone/rclone:1.73.0
+              command: ["sh", "-c"]
+              args:
+                - |
+                  rclone copyto /work/sabatina.dump "b2backup:${BACKUP_BUCKET}/sabatina/$(date -u +%F).dump" \
+                    && rclone delete --min-age 30d "b2backup:${BACKUP_BUCKET}/sabatina/"
+              env:
+                # rclone writes its config/cache under $HOME; the root filesystem is read-only
+                - name: HOME
+                  value: /tmp
+                - name: RCLONE_CONFIG_B2BACKUP_TYPE
+                  value: s3
+                - name: RCLONE_CONFIG_B2BACKUP_PROVIDER
+                  value: Other
+                # app keys limited to one bucket cannot list/create buckets
+                - name: RCLONE_CONFIG_B2BACKUP_NO_CHECK_BUCKET
+                  value: "true"
+                - name: BACKUP_BUCKET
+                  valueFrom:
+                    secretKeyRef:
+                      name: sabatina-backup
+                      key: BACKUP_BUCKET
+                - name: RCLONE_CONFIG_B2BACKUP_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: sabatina-backup
+                      key: RCLONE_CONFIG_B2BACKUP_ACCESS_KEY_ID
+                - name: RCLONE_CONFIG_B2BACKUP_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: sabatina-backup
+                      key: RCLONE_CONFIG_B2BACKUP_SECRET_ACCESS_KEY
+                - name: RCLONE_CONFIG_B2BACKUP_ENDPOINT
+                  valueFrom:
+                    secretKeyRef:
+                      name: sabatina-backup
+                      key: RCLONE_CONFIG_B2BACKUP_ENDPOINT
+                - name: RCLONE_CONFIG_B2BACKUP_REGION
+                  valueFrom:
+                    secretKeyRef:
+                      name: sabatina-backup
+                      key: RCLONE_CONFIG_B2BACKUP_REGION
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: ["ALL"]
+              volumeMounts:
+                - name: work
+                  mountPath: /work
+                - name: tmp
+                  mountPath: /tmp
+              resources:
+                requests:
+                  cpu: 20m
+                  memory: 64Mi
+                limits:
+                  memory: 256Mi
+          volumes:
+            - name: work
+              emptyDir: {}
+            - name: tmp
+              emptyDir: {}

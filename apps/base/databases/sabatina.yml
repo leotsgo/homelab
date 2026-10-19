@@ -1,0 +1,25 @@
+# Sabatina (ns sabatina, repo leotsgo/resume-app) and its staging twin (ns sabatina-staging).
+# The roles are declared under cluster.yml spec.managed.roles with their Vaultwarden-synced
+# passwords; the databases are declared here (CNPG Database CRD) and owned by them. Both apps
+# reach the cluster through homelab-rw.databases.svc.cluster.local:5432 with sslmode=require.
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: sabatina
+  namespace: databases
+spec:
+  cluster:
+    name: homelab
+  name: sabatina
+  owner: sabatina
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: sabatina-staging
+  namespace: databases
+spec:
+  cluster:
+    name: homelab
+  name: sabatina_staging
+  owner: sabatina_staging

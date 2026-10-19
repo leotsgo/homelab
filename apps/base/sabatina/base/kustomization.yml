@@ -1,0 +1,7 @@
+# Shared by both overlays. The image name `resume-app` is rewritten by each overlay's
+# `images:` entry (ghcr.io/leotsgo/resume-app at the tag that environment runs).
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - serve.yml
+  - work.yml
