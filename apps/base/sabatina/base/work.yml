@@ -1,0 +1,74 @@
+# Sabatina's queue worker (`app work`): the pipeline stages, imports, account wipes. No HTTP
+# server, so no probes and no Service. Same image, settings and secrets as serve.yml.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sabatina-work
+  labels:
+    app.kubernetes.io/name: sabatina
+    app.kubernetes.io/component: work
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: sabatina
+      app.kubernetes.io/component: work
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: sabatina
+        app.kubernetes.io/component: work
+    spec:
+      imagePullSecrets:
+        - name: ghcr-pull
+      # River stops jobs for 30 s, then cancels them (+10 s margin)
+      terminationGracePeriodSeconds: 45
+      # the image is x86_64-only (pinned typst asset)
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      # no pod talks to the Kubernetes API
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: work
+          image: resume-app
+          args: ["work"]
+          envFrom:
+            - configMapRef:
+                name: sabatina-config
+            - secretRef:
+                name: sabatina-env
+          env:
+            - name: DB_USER
+              value: sabatina
+            - name: DB_NAME
+              value: sabatina
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sabatina-db
+                  key: password
+            - name: DATABASE_URL
+              value: postgres://$(DB_USER):$(DB_PASSWORD)@homelab-rw.databases.svc.cluster.local:5432/$(DB_NAME)?sslmode=require
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              memory: 2Gi
+      volumes:
+        - name: tmp
+          emptyDir: {}

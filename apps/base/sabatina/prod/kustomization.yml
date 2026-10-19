@@ -1,0 +1,18 @@
+# Prod: ns sabatina, https://sabatina.app through the cluster-wide Cloudflare tunnel (public
+# hostname sabatina.app -> http://sabatina-serve.sabatina.svc.cluster.local:7322, set in the
+# Zero Trust dashboard; www redirects to the apex by a Cloudflare rule). No HTTPRoute: the
+# wildcard cert does not cover sabatina.app, and prod must not be reachable around the tunnel.
+# newTag moves only when the app's promote workflow is run with a tag staging already runs.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: sabatina
+resources:
+  - namespace.yml
+  - ../base
+  - config.yml
+  - networkpolicy.yml
+  - backup-cronjob.yml
+images:
+  - name: resume-app
+    newName: ghcr.io/leotsgo/resume-app
+    newTag: sha-0000000

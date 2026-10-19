@@ -164,3 +164,33 @@ spec:
         connectionLimit: -1
         passwordSecret:
           name: hopwing-db-secret
+      # Sabatina (ns sabatina, repo leotsgo/resume-app). Owner of the sabatina database
+      # (declared in sabatina.yml). Password pinned to the Vaultwarden-synced secret
+      # databases/sabatina-db (key `password`, URL-safe: the app splices it into its
+      # DATABASE_URL); the app reads the same key in ns sabatina.
+      - name: sabatina
+        ensure: present
+        login: true
+        superuser: false
+        createdb: false
+        createrole: false
+        inherit: true
+        replication: false
+        bypassrls: false
+        connectionLimit: -1
+        passwordSecret:
+          name: sabatina-db
+      # Its staging twin (ns sabatina-staging): owner of sabatina_staging, secret
+      # databases/sabatina-staging-db, same shape.
+      - name: sabatina_staging
+        ensure: present
+        login: true
+        superuser: false
+        createdb: false
+        createrole: false
+        inherit: true
+        replication: false
+        bypassrls: false
+        connectionLimit: -1
+        passwordSecret:
+          name: sabatina-staging-db

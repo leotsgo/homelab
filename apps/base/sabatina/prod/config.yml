@@ -1,0 +1,26 @@
+# Non-secret settings (secrets: the sabatina-env Secret, synced from the Vaultwarden item of
+# the same name). TRUST_PROXY reads the client IP from CF-Connecting-IP: only the tunnel can
+# reach serve (networkpolicy.yml), so the header cannot be forged. Sign-up is open.
+# LLM_PRICES carries the model's peak price (USD per million tokens) so the dollar caps count
+# real cost; without it the app bills every model at Opus prices.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sabatina-config
+  labels:
+    app.kubernetes.io/name: sabatina
+data:
+  APP_ENV: "prod"
+  HTTP_ADDR: "0.0.0.0:7322"
+  COOKIE_SECURE: "true"
+  TRUST_PROXY: "true"
+  SIGNUP: "open"
+  TYPST_FONT_PATH: "/usr/share/fonts"
+  MAIL_FROM: "Sabatina <login@sabatina.app>"
+  LLM_BASE_URL: "https://api.commandcode.ai/provider/v1"
+  MODEL_DEFAULT: "deepseek/deepseek-v4.1-flash"
+  OPENAI_JSON_MODE: "object"
+  LLM_PRICES: '{"deepseek/deepseek-v4.1-flash":{"in":0.30,"out":1.20,"cacheRead":0.006,"cacheWrite":0}}'
+  USAGE_MONTHLY_CAP_USD: "20"
+  USAGE_GLOBAL_MONTHLY_CAP_USD: "200"
+  USAGE_MAX_ACTIVE_RUNS: "3"

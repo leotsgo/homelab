@@ -1,0 +1,27 @@
+# Non-secret settings (secrets: the sabatina-env Secret, synced from Vaultwarden item
+# sabatina-staging-env with secret-name sabatina-env). TRUST_PROXY is off: Traefik is the only
+# client, so the per-network sign-in limits key on its address, which is fine for one user.
+# SIGNUP=closed: accounts are created with `app add-user` inside the serve pod.
+# LLM_PRICES carries the model's peak price (USD per million tokens) so the dollar caps count
+# real cost; without it the app bills every model at Opus prices.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sabatina-config
+  labels:
+    app.kubernetes.io/name: sabatina
+data:
+  APP_ENV: "prod"
+  HTTP_ADDR: "0.0.0.0:7322"
+  COOKIE_SECURE: "true"
+  TRUST_PROXY: "false"
+  SIGNUP: "closed"
+  TYPST_FONT_PATH: "/usr/share/fonts"
+  MAIL_FROM: "Sabatina staging <login@sabatina.app>"
+  LLM_BASE_URL: "https://api.commandcode.ai/provider/v1"
+  MODEL_DEFAULT: "deepseek/deepseek-v4.1-flash"
+  OPENAI_JSON_MODE: "object"
+  LLM_PRICES: '{"deepseek/deepseek-v4.1-flash":{"in":0.30,"out":1.20,"cacheRead":0.006,"cacheWrite":0}}'
+  USAGE_MONTHLY_CAP_USD: "10"
+  USAGE_GLOBAL_MONTHLY_CAP_USD: "20"
+  USAGE_MAX_ACTIVE_RUNS: "3"

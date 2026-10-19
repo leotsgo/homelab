@@ -1,0 +1,20 @@
+# Staging: ns sabatina-staging, https://sabatina.leotsgo.dev (LAN and tailnet only), sign-up
+# closed, its own database (sabatina_staging) and bucket. newTag is bumped by the app's deploy
+# workflow on every push to main.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: sabatina-staging
+resources:
+  - namespace.yml
+  - ../base
+  - config.yml
+  - httproute.yml
+  - networkpolicy.yml
+patches:
+  # the staging role, database and password secret (see the patch files)
+  - path: patch-db-serve.yml
+  - path: patch-db-work.yml
+images:
+  - name: resume-app
+    newName: ghcr.io/leotsgo/resume-app
+    newTag: sha-0000000
