@@ -20,7 +20,7 @@ spec:
         app.kubernetes.io/component: work
     spec:
       imagePullSecrets:
-        - name: ghcr-pull
+        - name: sabatina-ghcr-pull
       # River stops jobs for 30 s, then cancels them (+10 s margin)
       terminationGracePeriodSeconds: 45
       # the image is x86_64-only (pinned typst asset)
