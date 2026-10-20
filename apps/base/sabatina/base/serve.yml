@@ -6,7 +6,8 @@
 #   S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY, S3_BUCKET (optional ANTHROPIC_API_KEY, LLM_PRICES)
 # - sabatina-db: key `password`, shared with the CNPG managed role (URL-safe: it is spliced
 #   into DATABASE_URL below). The staging overlay points at sabatina-staging-db instead.
-# - sabatina-ghcr-pull: docker-registry secret for the private GHCR image (its own Vaultwarden item)
+# - ghcr-pull: docker-registry secret for the private GHCR image (the cluster's shared item,
+#   with sabatina and sabatina-staging in its namespaces)
 # Non-secret settings are the overlay's sabatina-config ConfigMap.
 apiVersion: apps/v1
 kind: Deployment
@@ -28,7 +29,7 @@ spec:
         app.kubernetes.io/component: serve
     spec:
       imagePullSecrets:
-        - name: sabatina-ghcr-pull
+        - name: ghcr-pull
       # shutdown budget of serve is ~23 s
       terminationGracePeriodSeconds: 30
       # the image is x86_64-only (pinned typst asset)
