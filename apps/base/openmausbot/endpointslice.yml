@@ -13,3 +13,7 @@ ports:
     protocol: TCP
 endpoints:
   - addresses: ["192.168.50.10"]
+    # Traefik 3.x skips endpoints without an explicit ready=true ("no available
+    # server"); nothing probes a hand-written slice, so it is set here.
+    conditions:
+      ready: true
