@@ -1,0 +1,15 @@
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: openmausbot-host
+  namespace: ai
+  labels:
+    kubernetes.io/service-name: openmausbot
+    endpointslice.kubernetes.io/managed-by: flux
+addressType: IPv4
+ports:
+  - name: http
+    port: 18799
+    protocol: TCP
+endpoints:
+  - addresses: ["192.168.50.10"]

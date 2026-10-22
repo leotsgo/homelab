@@ -1,0 +1,13 @@
+# OpenMausBot runs on the host (homelab-network roles/openmausbot), not in a pod.
+# Selector-less Service + hand-written EndpointSlice point the Gateway at the
+# host-side Caddy shim; TLS stays here on the wildcard listener.
+apiVersion: v1
+kind: Service
+metadata:
+  name: openmausbot
+  namespace: ai
+spec:
+  ports:
+    - name: http
+      port: 18799
+      targetPort: 18799
