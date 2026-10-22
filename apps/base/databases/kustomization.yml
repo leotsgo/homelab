@@ -9,6 +9,7 @@ resources:
   - backup.yml
   - lan-service.yml
   - sabatina.yml
+  - plane.yml
   - immich-cluster.yml
   - immich-backup.yml
   - valkey.yml

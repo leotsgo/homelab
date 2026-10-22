@@ -1,0 +1,137 @@
+# LAN + tailnet only (AdGuard rewrite + headscale extra_record, no public DNS).
+# Path map mirrors the chart's templates/ingress-traefik.yaml (Gateway API picks
+# the longest prefix, so rule order is irrelevant). /uploads = MinIO bucket
+# (browser-direct presigned uploads/downloads). CSP omitted (Next.js inline scripts).
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: plane-security-headers
+  namespace: plane
+spec:
+  headers:
+    browserXssFilter: true
+    contentTypeNosniff: true
+    forceSTSHeader: true
+    stsIncludeSubdomains: true
+    stsPreload: true
+    stsSeconds: 31536000
+    customFrameOptionsValue: "SAMEORIGIN"
+    referrerPolicy: "strict-origin-when-cross-origin"
+    permissionsPolicy: "camera=(), microphone=(), geolocation=()"
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: plane
+  namespace: plane
+spec:
+  parentRefs:
+    - name: homelab
+      namespace: gateway
+  hostnames:
+    - plane.leotsgo.dev
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /spaces
+      filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: plane-security-headers
+      backendRefs:
+        - name: plane-space
+          port: 3000
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /god-mode
+      filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: plane-security-headers
+      backendRefs:
+        - name: plane-admin
+          port: 3000
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api
+      filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: plane-security-headers
+      backendRefs:
+        - name: plane-api
+          port: 8000
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /auth
+      filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: plane-security-headers
+      backendRefs:
+        - name: plane-api
+          port: 8000
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /static/
+      filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: plane-security-headers
+      backendRefs:
+        - name: plane-api
+          port: 8000
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /live
+      filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: plane-security-headers
+      backendRefs:
+        - name: plane-live
+          port: 3000
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /uploads
+      filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: plane-security-headers
+      backendRefs:
+        - name: plane-minio
+          port: 9000
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: plane-security-headers
+      backendRefs:
+        - name: plane-web
+          port: 3000

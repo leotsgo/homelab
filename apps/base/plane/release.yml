@@ -1,0 +1,57 @@
+# Plane CE (project/task tracker; bots file tasks via plane-mcp-server). Chart
+# plane-ce from helm.plane.so. The chart's own Ingress is off: one HTTPRoute
+# (httproute.yml) on the shared gateway replays its path map instead.
+# Postgres = shared CNPG `homelab` cluster (role + Database in apps/base/databases).
+# Secrets (Vaultwarden, k3s@leotsgo.dev vault), all must exist before first reconcile:
+#   plane-secrets   ns plane,databases: `username`+`password` (CNPG role plane),
+#                   SECRET_KEY, LIVE_SERVER_SECRET_KEY, DATABASE_URL
+#                   (postgresql://plane:<pw>@homelab-rw.databases.svc.cluster.local:5432/plane?sslmode=require),
+#                   REDIS_URL (redis://plane-redis.plane.svc.cluster.local:6379/),
+#                   AMQP_URL (amqp://plane:<rmq-pw>@plane-rabbitmq.plane.svc.cluster.local/)
+#   plane-rabbitmq  ns plane: RABBITMQ_DEFAULT_USER=plane, RABBITMQ_DEFAULT_PASS=<rmq-pw>
+#   plane-doc-store ns plane: USE_MINIO=1, AWS_S3_BUCKET_NAME=uploads, FILE_SIZE_LIMIT=5242880,
+#                   MINIO_ROOT_USER, MINIO_ROOT_PASSWORD, AWS_ACCESS_KEY_ID (=root user),
+#                   AWS_SECRET_ACCESS_KEY (=root pw), AWS_S3_ENDPOINT_URL=http://plane-minio:9000
+# SECRET_KEY encrypts instance config rows (SMTP, OAuth secrets): never rotate it.
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: plane
+  namespace: plane
+spec:
+  interval: 30m
+  releaseName: plane
+  chart:
+    spec:
+      chart: plane-ce
+      version: "1.8.5"
+      sourceRef:
+        kind: HelmRepository
+        name: plane
+        namespace: plane
+      interval: 12h
+  values:
+    ingress:
+      enabled: false
+      appHost: plane.leotsgo.dev # still drives WEB_URL + CORS
+    ssl:
+      externalTermination: true # gateway wildcard TLS -> WEB_URL https://
+    env:
+      requireExplicitSecrets: true
+    external_secrets:
+      app_env_existingSecret: plane-secrets
+      live_env_existingSecret: plane-secrets
+      rabbitmq_existingSecret: plane-rabbitmq
+      doc_store_existingSecret: plane-doc-store
+    postgres:
+      local_setup: false
+    # ponytail: bundled redis has no auth (upstream default); cluster-internal
+    # only, cache data. Add requirepass if NetworkPolicies ever matter here.
+    redis:
+      local_setup: true
+    rabbitmq:
+      local_setup: true
+    minio:
+      local_setup: true
+      storageClass: plane-minio
+      volumeSize: 10Gi

@@ -21,3 +21,4 @@ resources:
   - ../base/blog
   - ../base/cloudflare
   - ../base/sabatina
+  - ../base/plane

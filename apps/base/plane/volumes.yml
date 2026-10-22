@@ -1,0 +1,18 @@
+# Static PV for the chart's MinIO StatefulSet (attachments/uploads). The chart's
+# volumeClaimTemplate (pvc-plane-minio-vol-plane-minio-wl-0) requests class
+# plane-minio, which has no provisioner, so it binds here. Backed up by restic
+# (debian-k3s restic_apps `plane`). Redis/RabbitMQ stay on local-path:
+# cache + task queue, re-derivable.
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: plane-minio
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: plane-minio
+  hostPath:
+    path: /var/data/plane/minio

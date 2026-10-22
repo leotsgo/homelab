@@ -1,0 +1,12 @@
+# Plane (ns plane). Role declared in cluster.yml managed.roles with the
+# Vaultwarden-synced password; the database is declared here and owned by it.
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: plane
+  namespace: databases
+spec:
+  cluster:
+    name: homelab
+  name: plane
+  owner: plane
