@@ -17,4 +17,4 @@ patches:
 images:
   - name: resume-app
     newName: ghcr.io/leotsgo/resume-app
-    newTag: sha-29129a3
+    newTag: sha-a12047a
