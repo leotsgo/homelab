@@ -15,4 +15,4 @@ resources:
 images:
   - name: resume-app
     newName: ghcr.io/leotsgo/resume-app
-    newTag: sha-736d96e
+    newTag: sha-3f458b1
