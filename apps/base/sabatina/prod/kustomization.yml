@@ -2,7 +2,8 @@
 # hostname sabatina.app -> http://sabatina-serve.sabatina.svc.cluster.local:7322, set in the
 # Zero Trust dashboard; www redirects to the apex by a Cloudflare rule). No HTTPRoute: the
 # wildcard cert does not cover sabatina.app, and prod must not be reachable around the tunnel.
-# newTag moves only when the app's promote workflow is run with a tag staging already runs.
+# newTag is bumped by the app's deploy workflow on every push to main; its promote workflow pins
+# an older tag (the rollback).
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: sabatina
