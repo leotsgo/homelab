@@ -180,20 +180,6 @@ spec:
         connectionLimit: -1
         passwordSecret:
           name: sabatina-db
-      # Its staging twin (ns sabatina-staging): owner of sabatina_staging, secret
-      # databases/sabatina-staging-db, same shape.
-      - name: sabatina_staging
-        ensure: present
-        login: true
-        superuser: false
-        createdb: false
-        createrole: false
-        inherit: true
-        replication: false
-        bypassrls: false
-        connectionLimit: -1
-        passwordSecret:
-          name: sabatina-staging-db
       # Plane (ns plane). Owner of the plane database (declared in plane.yml).
       # Password pinned to the Vaultwarden-synced secret databases/plane-secrets
       # (keys `username`+`password`); the app reads the same item's DATABASE_URL
