@@ -15,7 +15,8 @@ spec:
     stsPreload: true
     stsSeconds: 31536000
     customFrameOptionsValue: "SAMEORIGIN"
-    contentSecurityPolicy: "default-src 'self'; script-src 'self'"
+    # No contentSecurityPolicy: the app sends its own (blob: frames/workers,
+    # wasm) and overriding it hangs the reader.
     referrerPolicy: "strict-origin-when-cross-origin"
     permissionsPolicy: "camera=(), microphone=(), geolocation=()"
 ---
