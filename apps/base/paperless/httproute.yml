@@ -12,7 +12,9 @@ spec:
     stsPreload: true
     stsSeconds: 31536000
     customFrameOptionsValue: "SAMEORIGIN"
-    contentSecurityPolicy: "default-src 'self'; script-src 'self'"
+    # style-src: the 3.3.x frontend inlines critical CSS (<style>); without it
+    # the page renders unstyled.
+    contentSecurityPolicy: "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'"
     referrerPolicy: "strict-origin-when-cross-origin"
     permissionsPolicy: "camera=(), microphone=(), geolocation=()"
 ---
