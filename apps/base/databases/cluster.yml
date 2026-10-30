@@ -180,6 +180,24 @@ spec:
         connectionLimit: -1
         passwordSecret:
           name: sabatina-db
+      # Umami analytics (ns umami). Owner of the umami database. Password pinned
+      # to the Vaultwarden-synced secret databases/umami-db-secret (keys
+      # `username`+`password`); the app reads the same item's `url` and
+      # `app_secret` keys in ns umami. Create the database once, after the role:
+      #   kubectl exec -n databases homelab-1 -- \
+      #     psql -c 'CREATE DATABASE umami OWNER umami'
+      - name: umami
+        ensure: present
+        login: true
+        superuser: false
+        createdb: false
+        createrole: false
+        inherit: true
+        replication: false
+        bypassrls: false
+        connectionLimit: -1
+        passwordSecret:
+          name: umami-db-secret
       # Plane (ns plane). Owner of the plane database (declared in plane.yml).
       # Password pinned to the Vaultwarden-synced secret databases/plane-secrets
       # (keys `username`+`password`); the app reads the same item's DATABASE_URL

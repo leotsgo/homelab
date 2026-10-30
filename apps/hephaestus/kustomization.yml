@@ -19,6 +19,7 @@ resources:
   - ../base/yana
   - ../base/hopwing
   - ../base/blog
+  - ../base/umami
   - ../base/cloudflare
   - ../base/sabatina
   - ../base/plane

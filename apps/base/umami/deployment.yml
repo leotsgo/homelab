@@ -1,0 +1,64 @@
+# Umami web analytics for the blog. The dashboard is tailnet-only (httproute.yml);
+# the public tracker reaches this Service only through the blog's nginx, which
+# proxies exactly /stats/script.js and /stats/api/send, so the login page never
+# faces the internet. Own visits (LAN/tailnet, no CF-Connecting-IP) are
+# dropped there too, before reaching Umami.
+# Secret umami-db-secret (Vaultwarden, synced to ns umami + databases): keys
+# `username` + `password` (CNPG managed role), `url` (DATABASE_URL) and
+# `app_secret`. Migrations run on start.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: umami
+  namespace: umami
+  labels:
+    app: umami
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: umami
+  template:
+    metadata:
+      labels:
+        app: umami
+    spec:
+      containers:
+        - name: umami
+          image: ghcr.io/umami-software/umami:3.4.0
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: umami-db-secret
+                  key: url
+            - name: APP_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: umami-db-secret
+                  key: app_secret
+            - name: DISABLE_TELEMETRY
+              value: "1"
+            - name: DISABLE_UPDATES
+              value: "1"
+          resources:
+            requests:
+              memory: 192Mi
+              cpu: 25m
+            limits:
+              memory: 768Mi
+              cpu: "1000m"
+          ports:
+            - containerPort: 3000
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /api/heartbeat
+              port: 3000
+            periodSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /api/heartbeat
+              port: 3000
+            initialDelaySeconds: 60
+            periodSeconds: 30

@@ -1,0 +1,42 @@
+# Dashboard on the shared gateway: LAN + tailnet only (AdGuard rewrite and
+# headscale extra_record, no public DNS, no tunnel route). Same house
+# security-header Middleware as the other apps; CSP omitted, the Next.js UI
+# injects inline scripts.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: umami-security-headers
+  namespace: umami
+spec:
+  headers:
+    browserXssFilter: true
+    contentTypeNosniff: true
+    forceSTSHeader: true
+    stsIncludeSubdomains: true
+    stsPreload: true
+    stsSeconds: 31536000
+    customFrameOptionsValue: "SAMEORIGIN"
+    referrerPolicy: "strict-origin-when-cross-origin"
+    permissionsPolicy: "camera=(), microphone=(), geolocation=()"
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: umami
+  namespace: umami
+spec:
+  parentRefs:
+    - name: homelab
+      namespace: gateway
+  hostnames:
+    - umami.leotsgo.dev
+  rules:
+    - filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: umami-security-headers
+      backendRefs:
+        - name: umami
+          port: 3000
