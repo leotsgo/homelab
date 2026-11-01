@@ -38,6 +38,7 @@ spec:
       externalTermination: true # gateway wildcard TLS -> WEB_URL https://
     env:
       requireExplicitSecrets: true
+      api_key_rate_limit: "600/minute" # per API key (default 60); bots via plane-mcp-server hit 60
     external_secrets:
       app_env_existingSecret: plane-secrets
       live_env_existingSecret: plane-secrets
