@@ -38,7 +38,7 @@ spec:
           emptyDir: {}
       containers:
         - name: runner
-          image: ghcr.io/actions/actions-runner:2.338.0
+          image: ghcr.io/actions/actions-runner:2.338.2
           command:
             - /bin/sh
             - -c
