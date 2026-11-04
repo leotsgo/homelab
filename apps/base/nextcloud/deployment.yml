@@ -32,9 +32,11 @@ spec:
             requests:
               memory: 256Mi
               cpu: 10m
+            # Built-in CODE (richdocumentscode) runs coolwsd + one kit per open
+            # doc inside this pod; 1Gi OOMKilled it on opening an xlsx.
             limits:
-              memory: 1Gi
-              cpu: 500m
+              memory: 3Gi
+              cpu: 2000m
           env:
             # Migrated to the shared homelab cluster. NOTE: nextcloud only reads
             # this at initial install; the live value is dbhost in config.php on
