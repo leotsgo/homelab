@@ -29,7 +29,7 @@ spec:
           # Fork release (leotsgo/yana, semver X.Y.Z tags from vX.Y.Z git
           # tags; see its CHANGELOG.md). renovate.json's custom regex manager
           # opens a PR for each new release tag.
-          image: ghcr.io/leotsgo/yana:0.2.0
+          image: ghcr.io/leotsgo/yana:0.2.1
           envFrom:
             - configMapRef:
                 name: yana-config
