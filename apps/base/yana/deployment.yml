@@ -26,10 +26,10 @@ spec:
           # caches tag->digest. Rollback: flip back to the upstream digest
           # recorded 2026-09-21 below.
           # Upstream digest: ghcr.io/madeofpendletonwool/yana@sha256:26abb88fde88f7e8f2ab764ac45e859aad7e8adbe7f8619e6c97f1cf8b18df16
-          # Fork build (leotsgo/yana main = upstream + per-folder sort). Renovate
-          # tracks the date-semver tag the fork CI publishes on every sync;
-          # renovate.json's custom regex manager picks up the new v0.0.* tag.
-          image: ghcr.io/leotsgo/yana:v0.0.202611041356
+          # Fork release (leotsgo/yana, semver X.Y.Z tags from vX.Y.Z git
+          # tags; see its CHANGELOG.md). renovate.json's custom regex manager
+          # opens a PR for each new release tag.
+          image: ghcr.io/leotsgo/yana:0.1.0
           envFrom:
             - configMapRef:
                 name: yana-config
