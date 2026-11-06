@@ -61,6 +61,14 @@ spec:
               value: aimemory.leotsgo.dev,localhost,127.0.0.1,ai-memory.ai.svc.cluster.local
             - name: AI_MEMORY_AUTH__SECURE_COOKIE
               value: "true"
+            # Pin the cross-project profile to its single-user behaviour.
+            # `auto` turns it OFF once the server has a DB user (multi-user
+            # mode, needed for per-machine `aim_` keys); keep one shared
+            # global profile instead.
+            - name: AI_MEMORY_PROFILE__ENABLED
+              value: "true"
+            - name: AI_MEMORY_PROFILE__SHARE
+              value: global
           resources:
             requests:
               memory: "256Mi"
