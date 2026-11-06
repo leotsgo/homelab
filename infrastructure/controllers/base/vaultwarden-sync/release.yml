@@ -21,3 +21,9 @@ spec:
       config:
         VAULTWARDEN__SERVERURL: "https://vault.leotsgo.dev"
         SYNC__SYNCINTERVALSECONDS: "300"
+        # v2.1.0 can't decrypt items carrying a per-item cipher key (what
+        # recent Bitwarden clients write on edit): such an item drops out of
+        # the source list and orphan cleanup DELETED its Secret
+        # (ai/litellm-secrets, 2026-11-06). Undecryptable items now just
+        # stop updating; stale Secrets need manual `kubectl delete`.
+        SYNC__DELETEORPHANS: "false"
