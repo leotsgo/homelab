@@ -30,7 +30,7 @@ spec:
           # tags; see its CHANGELOG.md). renovate.json's custom regex manager
           # opens a PR for each new release tag. Between releases this pins
           # the commit image (ghcr.io/leotsgo/yana:<full git sha> from main).
-          image: ghcr.io/leotsgo/yana:9951f88f5b55e561431e8fde2d4cf841f411e2b1
+          image: ghcr.io/leotsgo/yana:844079c65933de2130cbf288ea80ab16ef74ae32
           envFrom:
             - configMapRef:
                 name: yana-config
