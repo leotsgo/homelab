@@ -1,6 +1,6 @@
 # Pinned to a GA release (the old `18-bookworm` tag froze at 18rc1 when CNPG moved
 # to flavor-suffixed tags).
-FROM ghcr.io/cloudnative-pg/postgresql:18.6-standard-bookworm
+FROM ghcr.io/cloudnative-pg/postgresql:18.7-standard-bookworm
 
 # barman-cli-cloud is in NO operand image flavor, `standard` included: CNPG dropped the
 # barman-cloud binaries in favour of the CNPG-I plugin. The cluster still backs up via
